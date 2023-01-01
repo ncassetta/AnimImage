@@ -1,5 +1,5 @@
 /// \mainpage
-/// AnimImage is a set of classes written by Nicola Cassetta, implementing animated sprites to be used within pygame. There are various types of animations; all of them allow the user to control the speed of the animation, and to stop and restart it.
+///  AnimImage is a set of classes written by Nicola Cassetta, implementing animated sprites to be used within pygame. There are various types of animations; all of them allow the user to control the speed of the animation, and to stop and restart it.
 ///
 /// + animimage.AnimSprite an animated Sprite class. The user must set a list of frames (pygame Surface) which will be shown in sequence; moreover he can choose between a one-shot animation (the Sprite will be killed at the end of the sequence) or a looped one.
 /// + animimage.VanishSprite a vanishing Sprite class. Starting from a given image (pygame Surface) it generates a list of frames with increasing transparence which will be shown in sequence, giving the impression of a disappearing image. Moreover the image can change its dimensions (growing or shrinking) and move in a fixed direction during the animation.

@@ -1,5 +1,6 @@
 import pygame
 
+# codes for GIF blocks
 _IMAGE_SEPARATOR = 0x2C
 _EXTENSION_INTRODUCER = 0x21
 _GRAPHIC_CONTROL_EXTENSION = 0xF9
@@ -8,6 +9,14 @@ _PLAIN_TEXT_EXTENSION = 0x01
 _APPLICATION_EXTENSION = 0xFF
 _BLOCK_TERMINATOR = 0x00
 _TRAILER = 0x3B
+# values for LZW flag
+_MUSTCLEAR = 1
+_FIRST = 2
+_NORMAL = 3
+_DEFERRED = 4
+# maximum for LZW code size (bits)
+_MAX_CSIZE = 12
+# GIF disposal methods
 _DISPOSALS = (
     "Unspecified",
     "No disposal",
@@ -109,19 +118,19 @@ class GIFDecoder:
         print("Interlaced:", self._is_interlaced, " Local table:", self._has_local_table,
               " Transparent color:", self._transparent_index if self._has_transparent_color else "None")
             
-    def LZWalgorythm(self):
-        lzw_table = [(i,) for i in range(2 ** self._lzw_code_size)]
+    def _LZWalgorythm(self): 
         CLEAR = 2 ** self._lzw_code_size
         EOI = CLEAR + 1
-        lzw_table.append(CLEAR)
-        lzw_table.append(EOI)
+        
+        lzw_table = [(i,) for i in range(2 ** self._lzw_code_size)]
+        lzw_table.extend((CLEAR, EOI))
         csize = self._lzw_code_size + 1
         mask = 2 ** csize - 1
+        flag = _MUSTCLEAR
+        code = oldcode = None
         
         offset = 0
         ind = 0
-        code = oldcode = None
-        numcodes = 0
         while ind < len(self._buffer):
             accumulator = int.from_bytes(self._buffer[ind:ind + 3], "little")
             accumulator >>= offset
@@ -131,25 +140,30 @@ class GIFDecoder:
                 offset -= 8
                 ind += 1
                 
-            if numcodes == 0:
-                if code != CLEAR:
-                    raise Exception("Bad LZW code")
-            elif numcodes == 1:
-                if code < CLEAR:
-                    self._color_codes.extend(lzw_table[code])
-                else:
-                    raise Exception("Bad LZW code")
+            if flag not in (_NORMAL, _DEFERRED):
+                if flag == _MUSTCLEAR:
+                    if code != CLEAR:
+                        raise Exception("Bad LZW code")
+                    flag = _FIRST
+                elif flag == _FIRST:
+                    if code < CLEAR:
+                        self._color_codes.extend(lzw_table[code])
+                    else:
+                        raise Exception("Bad LZW code")
+                    flag = _NORMAL
             elif code == EOI:
                 break
             elif code == CLEAR:
                 lzw_table = lzw_table[:2 ** self._lzw_code_size + 2]
                 csize = self._lzw_code_size + 1
                 mask = 2 ** csize - 1
-                oldcode = None
-                numcodes = 1
-                continue
+                flag = _FIRST
+                code = None         # sets oldcode in the last instruction
             else:
-                if code < len(lzw_table):
+                if flag == _DEFERRED:
+                    self._color_codes.extend(lzw_table[code]) 
+                    continue
+                elif code < len(lzw_table):
                     self._color_codes.extend(lzw_table[code])
                     s = lzw_table[oldcode] + (lzw_table[code][0],)
                 else:
@@ -157,11 +171,13 @@ class GIFDecoder:
                     self._color_codes.extend(s)
                 lzw_table.append(s)
                 if len(lzw_table) == 2 ** csize:
-                    csize += 1
-                    mask = 2 ** csize - 1
+                    if csize < _MAX_CSIZE:
+                        csize += 1
+                        mask = 2 ** csize - 1
+                    else:
+                        flag = _DEFERRED
                 
             oldcode = code
-            numcodes += 1
         
             #for i in range(len(lzw_table)):
             #    print(i + 1, lzw_table[i])
@@ -176,6 +192,7 @@ class GIFDecoder:
         
     
     def decode(self, fname):
+        print ("Start decoding", fname)
         self.reset_all()
         with open(fname, "r+b") as self._f:
             self._read_header()
@@ -226,7 +243,7 @@ class GIFDecoder:
                     self._read_blocks()
                     #self.print_image_attr()
                     try:
-                        self.LZWalgorythm()
+                        self._LZWalgorythm()
                     except:
                         print("LZW algorythm failed, file partially decoded!")
                     #print("color codes _buffer length: {:} (teoric: {:}".format(
@@ -237,10 +254,10 @@ class GIFDecoder:
                         color_table = self._global_color_table
                     else:
                         raise Exception("No color table")
-                    array = bytearray(self._color_depth * self._image_width * self._image_height)
+                    array = bytearray(3 * self._image_width * self._image_height)
                     for i in range(len(self._color_codes)):
-                        for j in range(self._color_depth):
-                            array[self._color_depth * i + j] = color_table[self._color_codes[i]][j]
+                        for j in range(3):
+                            array[3 * i + j] = color_table[self._color_codes[i]][j]
                     surf = pygame.image.frombuffer(array.copy(), (self._image_width, self._image_height), "RGB")
                     if self._has_transparent_color:
                         surf.set_colorkey(color_table[self._transparent_index])
@@ -257,6 +274,7 @@ class GIFDecoder:
                                         
                 self._buffer = self._f.read(1)
             print("End of input stream")
+        return self._images
             
     def debug_blocks(self, fname):
         print("{:^30}{:>10}{:>10}{:>10}".format("BLOCK TYPE", "OFFSET", "TOT SIZE", "BUF SIZE"))
@@ -322,32 +340,35 @@ class GIFDecoder:
                                         
                 self._buffer = self._f.read(1)
             print("End of input stream")
+    
+    def get_images(self):
+        return self._images
 
     
         
     
     
+#from slicesheet import viewlist
 
-dec = GIFDecoder()
-fname = input("GIF file name: ")
-dec.decode(fname)
-pygame.init()
-screen = pygame.display.set_mode((800, 600))
-screen.fill("white")
-pygame.display.flip()
-pygame.time.wait(2000)
-#img = dec.images[0].copy()
-#screen = pygame.display.set_mode((4 * (dec.screen_width + 10) + 10, (len(dec.images) // 4 + 1) * (dec.screen_height + 10) + 10))
-#screen.fill("white")
-for i in range(len(dec.images)):
-    #x, y = i // 4, i % 4
-    #screen.blit(dec.images[i], (10 + x * (dec.screen_width + 10), 10 + y * (dec.screen_height + 10)))
-    screen.fill("white")
-    screen.blit(dec.images[i], (100, 100))
-    pygame.display.flip()
-    pygame.time.wait(50)
-print("Quitting pygame")
-pygame.quit()
+#dec = GIFDecoder()
+#fname = input("GIF file name: ")
+#dec.decode(fname)
+#pygame.init()
+
+#viewlist(dec.get_images(), 200)
+
+##img = dec.images[0].copy()
+##screen = pygame.display.set_mode((4 * (dec.screen_width + 10) + 10, (len(dec.images) // 4 + 1) * (dec.screen_height + 10) + 10))
+##screen.fill("white")
+##for i in range(len(dec.images)):
+    ###x, y = i // 4, i % 4
+    ###screen.blit(dec.images[i], (10 + x * (dec.screen_width + 10), 10 + y * (dec.screen_height + 10)))
+    ##screen.fill("white")
+    ##screen.blit(dec.images[i], (100, 100))
+    ##pygame.display.flip()
+    ##pygame.time.wait(50)
+#print("Quitting pygame")
+#pygame.quit()
 
 
 #dec = GIFDecoder()

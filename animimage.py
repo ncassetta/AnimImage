@@ -17,7 +17,7 @@
 ##    Nicola Cassetta
 ##    ncassetta@tiscali.it
 
-"""\namespace pygame module with animated Sprite class
+"""pygame module with animated Sprite class
 
 This module contains a simple AnimSprite (animated Sprite) class to be used
 within pygame. It is a subclass of the Sprite object, so it can be added
@@ -65,12 +65,22 @@ class AnimSprite(pygame.sprite.Sprite):
     and VanishSprite), so you can call update() on it keeping all animations in progress.
         """
         pygame.sprite.Sprite.__init__(self, *args)
+        
+        ## The list of all frames.
         self.images = []
+        ## The speed rate.
         self.rate = 1
+        ## **True** if the animation is loop.
         self.loop = False
-        self.img_frame = 0
-        self.rate_offset = 0
+        ## The current frame of the animation.
+        self.frame = 0
+        self._rate_offset = 0
+        ## **True** if the animation is in process, **False** if it is stopped.
         self.running = False
+        ## The Sprite actual image
+        self.image = None
+        ## The Sprite actual Rect
+        self.rect = None
         
     def set_images(self, img_list, loop=False):
         """
@@ -81,8 +91,9 @@ class AnimSprite(pygame.sprite.Sprite):
     \param loop if **False** the Sprite will be killed (i.e\. deleted from all Group
     it belongs) after the last frame, otherwise the animation will restart from the
     first frame and you must kill or stop it by yourself.
-    \note this method assigns as the Sprite Rect the Rect got from the 1st Surface,
-    so all frames should have the same dimensions or you can get unexpected behaviour.
+    \note this method assigns to the Sprite _rect_ attribute the Rect got from the 1st
+    Surface, so all frames should have the same dimensions or you may get unexpected
+    behaviour.
         """
         for obj in img_list:
             if isinstance(obj, str):
@@ -90,12 +101,15 @@ class AnimSprite(pygame.sprite.Sprite):
             elif isinstance(obj, pygame.Surface):
                 self.images.append(obj)
         self.loop = loop
+        ## The sprite rect
         self.rect = self.images[0].get_rect() if self.images else None
-        self.img_frame = 0
+        self.frame = 0
+        ## The sprite image
         self.image = self.images[0] if self.images else None
-        self.rate_offset = 0
+        self._rate_offset = 0
         self.running = True
-        # self.update()
+        if _debug:
+            print("Frame 0 AnimSprite animation started")
 
     def anim_stop(self, frame=None):
         """
@@ -109,8 +123,10 @@ class AnimSprite(pygame.sprite.Sprite):
         if frame:
             if frame >= len(self.images):
                 raise IndexError("list index out of range")
-            self.img_frame = frame
-            self.image = self.images[self.img_frame]
+            self.frame = frame
+            self.image = self.images[self.frame]
+        if _debug:
+            print("Frame", self.frame, "AnimSprite animation stopped")        
     
     def anim_start(self, frame=None):
         """
@@ -124,11 +140,12 @@ class AnimSprite(pygame.sprite.Sprite):
         if frame:
             if frame >= len(self.images):
                 raise IndexError("list index out of range")
-            self.img_frame = frame
-            self.image = self.images[self.img_frame]
+            self.frame = frame
+            self.image = self.images[self.frame]
         self.running = True
-        self.rate_offset = 0
-        self.update(self)
+        self._rate_offset = 0
+        if _debug:
+            print("Frame", self.frame, "AnimSprite animation restarted")        
         
 
     def set_rate(self, rate):
@@ -138,7 +155,7 @@ class AnimSprite(pygame.sprite.Sprite):
     every two calls, and so on. The parameter can be a float number.
         """
         self.rate = rate
-        self.rate_offset = 0
+        self._rate_offset = 0
 
     def update(self):
         """
@@ -152,17 +169,17 @@ class AnimSprite(pygame.sprite.Sprite):
     longer be drawn).
         """
         if self.images and self.running:
-            self.rate_offset += 1
-            if self.rate_offset >= self.rate:
-                self.rate_offset -= self.rate
-                self.img_frame += 1
+            self._rate_offset += 1
+            if self._rate_offset >= self.rate:
+                self._rate_offset -= self.rate
+                self.frame += 1
                 if _debug:
-                    print("Frame", self.img_frame) 
-                if self.img_frame == len(self.images):
-                    self.img_frame = 0
+                    print("Frame", self.frame) 
+                if self.frame == len(self.images):
+                    self.frame = 0
                     if not self.loop:
                         self.kill()
-                self.image = self.images[self.img_frame]
+                self.image = self.images[self.frame]
 
     def set_loop(loop):
         """
@@ -173,14 +190,6 @@ class AnimSprite(pygame.sprite.Sprite):
         """
         if loop in (True, False):
             self.loop = loop
-
-    def get_loop():
-        """
-    Returns the loop state.
-    \return **False** if the loop is not active (the Sprite will be killed after the
-    last frame), **True** if it is (the animation will restart from the first frame).
-        """
-        return self.loop
 
 
 
@@ -206,7 +215,7 @@ class VanishSprite(pygame.sprite.Sprite):
     and AnimSprite), so you can call update() on it keeping all animations in progress.
         """
         pygame.sprite.Sprite.__init__(self, *args)
-        self.image = None
+        self.image, self.rect = None, None
         self.set_param()
         self.running = False
         
@@ -221,11 +230,13 @@ class VanishSprite(pygame.sprite.Sprite):
         elif isinstance(img, pygame.Surface):
             self.orig_image = img.convert_alpha()
         self.rect = self.imag.get_rect() if self.image else None
-        self.rate_offset = 0
-        self.img_frame = 0
+        self._rate_offset = 0
+        self.frame = 0
         self.image = self.orig_image
         self.rect = self.orig_image.get_rect()
         self.running = True
+        if _debug:
+            print("Frame 0 VanishSprite animation started")        
 
     def anim_stop(self, frame=None):
         """
@@ -234,13 +245,15 @@ class VanishSprite(pygame.sprite.Sprite):
     \param frame if you leave None the animation will stop on the actual frame,
     otherwise you can choose the fixed frame to show. It throws an exception if
     frame is out of range.
-        """        
+        """
+        self.running = False        
         if frame:
             if frame >= self.frames:
                 raise IndexError("list index out of range")
-            self.img_frame = frame
-            self.update(self)
-        self.running = False
+            self.frame = frame
+            self._set_current_image()
+        if _debug:
+            print("Frame", self.frame, "VanishSprite animation stopped")        
     
     def anim_start(self, frame=None):
         """
@@ -254,10 +267,12 @@ class VanishSprite(pygame.sprite.Sprite):
         if frame:
             if frame >= self.frames:
                 raise IndexError("list index out of range")
-            self.img_frame = frame
+            self.frame = frame
+            self._set_current_image()
+        self._rate_offset = 0
         self.running = True
-        self.rate_offset = 0
-        self.update(self)
+        if _debug:
+            print("Frame", self.frame, "VanishSprite animation restarted")        
         
     def set_param(self, rate=1, scale=1, frames=4, dir=(0, 0)):
         """
@@ -274,8 +289,8 @@ class VanishSprite(pygame.sprite.Sprite):
     It is a duple of integers with the x, y values ​(in pixels) ​of the direction vector. 
         """
         self.rate = rate
-        self.rate_offset = 0
-        self.img_frame = 0
+        self._rate_offset = 0
+        self.frame = 0
         self.scale = scale
         self.frames = frames
         self.trans_amt = 256 // int(frames) + 1
@@ -291,32 +306,35 @@ class VanishSprite(pygame.sprite.Sprite):
     object from all Group it belongs (so the object will no longer be drawn).
         """
         if self.orig_image and self.running:
-            if self.img_frame == 0:
+            if self.frame == 0:
                 # first visualization: image and rect already set by set_image()
-                self.img_frame = 1
+                self.frame = 1
                 if _debug:
-                    print("Frame", self.img_frame, "Dimensions", self.image.get_size(), "Alpha 255")
+                    print("Frame", self.frame, "Dimensions", self.image.get_size(), "Alpha 255")
             else:
-                self.rate_offset += 1
-                if self.rate_offset >= self.rate:
-                    self.rate_offset -= self.rate
-                    self.img_frame += 1
-                    if self.img_frame > self.frames:
+                self._rate_offset += 1
+                if self._rate_offset >= self.rate:
+                    self._rate_offset -= self.rate
+                    self.frame += 1
+                    if self.frame > self.frames:
                         self.kill()
                         return
-                    scale_amt = (int(self.orig_image.get_width() * (1 + (self.scale - 1) / self.frames * self.img_frame)),
-                                 int(self.orig_image.get_height() * (1 + (self.scale - 1) / self.frames * self.img_frame)))
-                    if scale_amt != (0, 0):
-                        img = pygame.transform.smoothscale(self.orig_image, scale_amt)
-                    else:
-                        img = self.orig_image
-                    img.set_alpha(255 - self.trans_amt * self.img_frame)
-                    self.image = img
-                    center = (self.rect.centerx + self.dir[0], self.rect.centery + self.dir[1])
-                    self.rect = img.get_rect()
-                    self.rect.center = center
-                    if _debug:
-                        print("Frame", self.img_frame, "Dimensions", self.image.get_size(), "Alpha", img.get_alpha())
+                    self._set_current_image()
+                        
+    def _set_current_image(self):
+        scale_amt = (int(self.orig_image.get_width() * (1 + (self.scale - 1) / self.frames * self.frame)),
+                     int(self.orig_image.get_height() * (1 + (self.scale - 1) / self.frames * self.frame)))
+        if scale_amt != (0, 0):
+            img = pygame.transform.smoothscale(self.orig_image, scale_amt)
+        else:
+            img = self.orig_image
+        img.set_alpha(255 - self.trans_amt * self.frame)
+        self.image = img
+        center = (self.rect.centerx + self.dir[0], self.rect.centery + self.dir[1])
+        self.rect = img.get_rect()
+        self.rect.center = center
+        if _debug:
+            print("Frame", self.frame, "Dimensions", self.image.get_size(), "Alpha", img.get_alpha())        
 
 
 
@@ -359,29 +377,54 @@ class FlashSprite(pygame.sprite.Sprite):
             self.orig_alpha = self.orig_image.get_alpha()
         else:
             self.rect = self.orig_alpha = None
-        self.rate_offset = 0
-        self.img_frame = 0
+        self._rate_offset = 0
+        self.frame = 0
         self.image = self.orig_image
         self.rect = self.orig_image.get_rect()
         self.running = True
+        if _debug:
+            print("Frame 0 FlashSprite animation started")        
 
-    def anim_stop(self, frame=None):
+    def anim_stop(self, frame=None, visible=False):
+        """
+    Stops the animation. The Sprite remains visible, but calling update() will no
+    longer progress to the next frame.
+    \param frame if you leave None the animation will stop on the actual frame,
+    otherwise you can choose the fixed frame to show. It throws an exception if
+    frame is out of range.
+    \param visible if you set it True the flashing will be stopped when the Sprite
+    is visible, otherwise it can be stopped even if the Sprite is actually invisible.
+        """   
+        if frame and frame >= self.flashes * 2:
+            raise IndexError("list index out of range")
         self.running = False
-        if frame:
-            if frame >= self.frames:
-                raise IndexError("list index out of range")
-            self.img_frame = frame
-            self.update(self)
-    
+        if frame == None:
+            frame = self.frame
+        if visible and frame % 2:
+            frame -= 1
+        self.frame = frame
+        self._set_current_image()
+        if _debug:
+            print("Frame", self.frame, "FlashSprite animation stopped")        
+        
     def anim_start(self, frame=None):
+        """
+    Restarts an animation which had been stopped by anim_stop(). Animations are
+    automatically started when you call set_images(), so you need this only if
+    you had formerly stopped the animation.
+    \param frame if you leave None the animation will restart from the last frame
+    on which it was stopped, otherwise you can set the starting frame. It throws
+    an exception if frame is out of range.
+        """        
         if frame:
-            if frame >= self.frames:
+            if frame >= self.flashes * 2:
                 raise IndexError("list index out of range")
-            self.img_frame = frame
-            self.rate_offset = 0
+            self.frame = frame
+            self._set_current_image()
+        self._rate_offset = 0
         self.running = True
-        if frame:
-            self.update(self)
+        if _debug:
+            print("Frame", self.frame, "AnimSprite animation restarted")        
         
     def set_param(self, rate=1, flashes=3, hold=False):
         """
@@ -397,8 +440,8 @@ class FlashSprite(pygame.sprite.Sprite):
     last flash, otherwise it will remain as a still image.
         """        
         self.rate = rate
-        self.rate_offset = 0
-        self.img_frame = 0
+        self._rate_offset = 0
+        self.frame = 0
         self.flashes = int(flashes)
         self.hold = hold
         
@@ -423,33 +466,55 @@ class FlashSprite(pygame.sprite.Sprite):
     will no longer be drawn).
         """        
         if self.orig_image and self.running:
-            self.rate_offset += 1
-            if self.rate_offset >= self.rate:
-                self.rate_offset -= self.rate
-                self.img_frame += 1
-                if self.img_frame > 2 * self.flashes - 1 and self.flashes != -1:
+            self._rate_offset += 1
+            if self._rate_offset >= self.rate:
+                self._rate_offset -= self.rate
+                self.frame += 1
+                if self.frame > 2 * self.flashes - 1 and self.flashes != -1:
                     if not self.hold:
                         self.kill()
                         if _debug:
-                            print("Frame", self.img_frame, "Sprite killed")
+                            print("Frame", self.frame, "Sprite killed")
                     else:
                         self.image.set_alpha(self.orig_alpha)
                         self.running = False
-                        self.remove(self.toberemoved)
+                        if self.toberemoved:
+                            self.remove(self.toberemoved)
                         if _debug:
-                            print("Frame", self.img_frame, "Sprite held")
-                elif self.img_frame % 2:
-                    self.image.set_alpha(0)
-                    if _debug:
-                        print("Frame", self.img_frame, "Flash", self.img_frame // 2 + 1, "Image off")
+                            print("Frame", self.frame, "Sprite held")
                 else:
-                    self.image.set_alpha(self.orig_alpha)
-                    if _debug:
-                        print("Frame", self.img_frame, "Flash", self.img_frame // 2 + 1, "Image on")
+                    self._set_current_image()
+                                                       
+    def _set_current_image(self):
+        """Internal function."""
+        if self.frame % 2:
+            self.image.set_alpha(0)
+            if _debug:
+                print("Frame", self.frame, "Flash", self.frame // 2 + 1, "Image off")
+        else:
+            self.image.set_alpha(self.orig_alpha)
+            if _debug:
+                print("Frame", self.frame, "Flash", self.frame // 2 + 1, "Image on")
+       
                 
-                        
-                        
 
+if __name__ == "__main__":
+    pygame.init()
+    fnt_big = pygame.font.SysFont("Arial", 48, bold=True)
+    fnt_small = pygame.font.SysFont("Arial", 24)
+    screen = pygame.display.set_mode((400, 300))
+    screen.fill("aqua")
+    surf = fnt_big.render("Animimage 0.9",True, "blue")
+    screen.blit(surf, (60, 30))
+    surf = fnt_small.render("A library for animated sprites in pygame", True, "blue")
+    screen.blit(surf,(20, 120))
+    surf = fnt_small.render("(C) 2023 Nicola Cassetta", True, "blue")
+    screen.blit(surf, (80, 160))
+    surf = fnt_small.render("See the example files for usage.", True, "blue")
+    screen.blit(surf, (60, 200))
+    pygame.display.flip()
+    pygame.time.wait(3500)
+    pygame.quit()
 
 
 

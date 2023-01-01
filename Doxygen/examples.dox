@@ -1,0 +1,12 @@
+/// \example loopanim.py 
+/// An example of the usage of AnimSprite class with looped animations. Cars move from left to right: you can pause animations (not moving) pressing SPACE and change their speed with LEFT and RIGHT arrow keys.
+///
+/// \example flashanim.py
+/// An example of the usage of FlashSprite class. Flashing writings appears on the screen: you can pause them pressing SPACE and toggle persistent mode pressing LEFT ALT (i.e. they disappear or remain on the screen after flashing).
+///
+/// \example vanishanim.py
+/// An example of the most common widget options.
+///
+
+
+
