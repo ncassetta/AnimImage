@@ -1,3 +1,0 @@
-EXPORTS
-    DllMain @1
-    SomeFunction @2

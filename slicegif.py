@@ -1,3 +1,4 @@
+import ctypes, time, os
 import pygame
 
 # codes for GIF blocks
@@ -23,6 +24,10 @@ _DISPOSALS = (
     "Restore to background color",
     "Restore to previous")
 
+# times for time log
+init_time = 0
+end_time = 0
+
 
 class GIFDecoder:
     """
@@ -33,6 +38,10 @@ class GIFDecoder:
     The constructor.
         """
         self.reset_all()
+        
+        temp = os.path.join("GIFDecoder", "bin", "libGIFDecoder.dll")
+        self.lib = ctypes.CDLL(temp)
+        print(self.lib.__dict__)
         
     def reset_all(self):
         self._buffer = bytearray()
@@ -192,6 +201,8 @@ class GIFDecoder:
         
     
     def decode(self, fname):
+        self.log_start()
+        self._fname = fname
         print ("Start decoding", fname)
         self.reset_all()
         with open(fname, "r+b") as self._f:
@@ -244,6 +255,9 @@ class GIFDecoder:
                     #self.print_image_attr()
                     try:
                         self._LZWalgorythm()
+                    #self.lib.LZWAlgorythm(ctypes.c_uint(self._lzw_code_size),
+                    #                          ctypes.c_uint(len(self._buffer)),
+                    #                          ctypes.create_string_buffer(bytes(self._buffer)))
                     except:
                         print("LZW algorythm failed, file partially decoded!")
                     #print("color codes _buffer length: {:} (teoric: {:}".format(
@@ -274,6 +288,7 @@ class GIFDecoder:
                                         
                 self._buffer = self._f.read(1)
             print("End of input stream")
+            self.log_end()
         return self._images
             
     def debug_blocks(self, fname):
@@ -340,22 +355,53 @@ class GIFDecoder:
                                         
                 self._buffer = self._f.read(1)
             print("End of input stream")
+            
+    def log_start(self):
+        self.logf = open("GIFDecoder.log", "a")
+        self.init_time = time.time_ns()
+        
+    def log_end(self):
+        self.end_time = time.time_ns()
+        if self.logf:
+            time_diff = self.end_time - self.init_time
+            self.logf.write("Date:    " + time.asctime() + "\n")
+            self.logf.write("File:    " + self._fname + "\n")
+            
+            self.logf.write("Images:  " + str(len(self._images)) + "\n")
+            self.logf.write("Time:    " + "{:.3f}".format(time_diff / 1000000000) + "\n")
+            self.logf.write("Average: " + "{:.3f}".format(time_diff / (1000000000 * len(self._images))) + "\n")
+            self.logf.write("Initial algorythm with basic console output\n\n")
+            self.logf.close()
+            
     
     def get_images(self):
         return self._images
+    
+    def save_images(self, prefix=None, ext=".png", form="04d"):
+        if (self._images):
+            if not prefix:
+                prefix = self._fname
+            s = prefix + "{:" + form + "}" + ext
+            for i in range(len(self._images)):
+                fname = s.format(i)
+                with open(fname, "r+b") as f:
+                    save(self._images[i], f)
+        else:
+            raise("Empty image list")
+        
 
     
         
     
     
-#from slicesheet import viewlist
+from slicesheet import viewlist
 
-#dec = GIFDecoder()
-#fname = input("GIF file name: ")
-#dec.decode(fname)
-#pygame.init()
+dec = GIFDecoder()
+fname = input("GIF file name: ")
+dec.decode(fname)
+pygame.init()
 
-#viewlist(dec.get_images(), 200)
+viewlist(dec.get_images(), 200)
 
 ##img = dec.images[0].copy()
 ##screen = pygame.display.set_mode((4 * (dec.screen_width + 10) + 10, (len(dec.images) // 4 + 1) * (dec.screen_height + 10) + 10))
