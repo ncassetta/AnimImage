@@ -215,7 +215,7 @@ class GIFDecoder:
                 if self._buffer[0] == _EXTENSION_INTRODUCER:
                     self._buffer = self._f.read(1)
                     if self._buffer[0] == _GRAPHIC_CONTROL_EXTENSION:
-                        print("Graphic control extension")
+                        #print("Graphic control extension")
                         self._read_blocks()
                         self._disposal_method = (self._buffer[0] & 0x1C) >> 2
                         self._user_input = bool(self._buffer[0] & 0x02)
@@ -223,21 +223,21 @@ class GIFDecoder:
                         self._delay_time = int.from_bytes(self._buffer[1:3], "little")
                         self._transparent_index = self._buffer[3]    
                     elif self._buffer[0] == _COMMENT_EXTENSION:
-                        print("Comment extension")
+                        #print("Comment extension")
                         self._read_blocks()
-                        print(self._buffer.decode("utf-8"))
+                        #print(self._buffer.decode("utf-8"))
                     elif self._buffer[0] == _PLAIN_TEXT_EXTENSION:
-                        print("Plain text extension")
+                        #print("Plain text extension")
                         self._read_blocks()
-                        print(self._buffer.decode("utf-8"))
+                        #print(self._buffer.decode("utf-8"))
                     elif self._buffer[0] == _APPLICATION_EXTENSION:
-                        print("Application extension")
+                        #print("Application extension")
                         self._read_blocks()
-                        print(self._buffer.decode("utf-8"))
+                        #print(self._buffer.decode("utf-8"))
                     else:
                         raise("Unknown extension")
                 elif self._buffer[0] == _IMAGE_SEPARATOR:
-                    print("Image n.", len(self._images) + 1)
+                    #print("Image n.", len(self._images) + 1)
                     self.reset_image()
                     self._image_left_pos = int.from_bytes(self._f.read(2), "little")
                     self._image_top_pos = int.from_bytes(self._f.read(2), "little")
@@ -370,7 +370,7 @@ class GIFDecoder:
             self.logf.write("Images:  " + str(len(self._images)) + "\n")
             self.logf.write("Time:    " + "{:.3f}".format(time_diff / 1000000000) + "\n")
             self.logf.write("Average: " + "{:.3f}".format(time_diff / (1000000000 * len(self._images))) + "\n")
-            self.logf.write("Initial algorythm with basic console output\n\n")
+            self.logf.write("Initial algorythm without output\n\n")
             self.logf.close()
             
     
