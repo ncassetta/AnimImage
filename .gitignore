@@ -153,8 +153,9 @@ cython_debug/
 
 
 # ADDED BY ME
-/GIFDecoder/bin
-/GIFDecoder/obj
+/GIFDecoder/.objs/
 /GIFDecoder/GIFDecoder.depend
 /GIFDecoder/GIFDecoder.layout
+/GIFDecoder/lib*.*
+/GIFDecoder/GIFDecoder.dll
 !GIFDecoder.log

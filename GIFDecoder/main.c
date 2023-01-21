@@ -7,6 +7,8 @@ unsigned char* bytes = 0;
 size_t tot_size;
 
 FILE* fptr;
+struct myvector lzw_codes;
+unsigned int CODES_LEN = 100000;
 
 void read_blocks() {
     size_t new_size = 0;
@@ -35,8 +37,9 @@ int main(int argc, char *argv[]) {
     fptr = fopen("C:\\Users\\ncass\\Python\\AnimImage\\se2017aug21t.gif", "rb");
     fseek(fptr, 205, SEEK_SET);
     read_blocks();
-    struct myvector* lzw_codes_ptr = LZWAlgorythm(4, tot_size, bytes);
-    print_codes_table(lzw_codes_ptr);
+    myv_init(&lzw_codes, 2, CODES_LEN, false);
+    LZWAlgorythm(4, tot_size, bytes, lzw_codes.alloc_elements, (uint16_t *)lzw_codes.ptr);
+    print_codes_table(&lzw_codes);
     return 0;
 }
 

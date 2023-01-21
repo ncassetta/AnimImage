@@ -1,7 +1,3 @@
-#include <stdlib.h>
-#include <inttypes.h>
-#include <string.h>
-#include <stdio.h>
 #include "myvector.h"
 #include "GIFDecoder.h"
 
@@ -42,31 +38,30 @@ void print_uint16_string(struct myvector *v){
         printf (" %u", ((uint16_t *)v->ptr)[i]);
 }
 
-void* LZWAlgorythm(unsigned int lzw_code_size, unsigned int len, unsigned char* bytes) {
+unsigned int LZWAlgorythm(unsigned int lzw_code_size, unsigned int len, unsigned char* bytes, unsigned int codes_len, uint16_t* lzw_codes_ptr) {
     uint16_t CLEAR = 1 << lzw_code_size;
     uint16_t EOI = CLEAR + 1;
     uint16_t csize = lzw_code_size + 1;
     uint16_t mask = (1 << csize) - 1;
-    struct myvector lzw_table, lzw_codes, s, *lzw_table_ptr;
+    struct myvector lzw_table, s, *lzw_table_ptr;
+    struct myvector lzw_codes = { .ptr = (uint16_t *)lzw_codes_ptr, .element_size = 2, .elements = 0, .alloc_elements = codes_len};
     uint16_t *el_ptr;
     enum t_status flag = MUSTCLEAR;
     uint16_t code, oldcode;
 
-    printf("Arguments:\nlzw_code_size %d\nlen %d\nbytes %p\n", lzw_code_size,
-           len, bytes);
+    printf("Arguments:\nlzw_code_size %d\nlen %d\nbytes %p\ncodes_len %d\nlzw_codes_ptr %p\n",
+           lzw_code_size, len, bytes, codes_len, lzw_codes_ptr);
 
     lzw_table_ptr = (struct myvector *)myv_init(&lzw_table, sizeof(struct myvector), (1 << lzw_code_size) + 2, false);
     for (unsigned int i = 0; i <= EOI; i++) {
         el_ptr = (uint16_t *)myv_init(lzw_table_ptr + i, 2, 1, true);
         *el_ptr = i;
     }
-    myv_init(&lzw_codes, 2, 0, false);
     myv_init(&s, 2, 0, false);
 
 
 
-    unsigned int offset = 0;
-    unsigned int ind = 0;
+    unsigned int offset = 0, ind = 0;
     uint32_t accumulator = 0;
 
     while (ind <= len) {
@@ -141,6 +136,16 @@ void* LZWAlgorythm(unsigned int lzw_code_size, unsigned int len, unsigned char* 
     for (unsigned int i = 0; i < lzw_table.elements; i++)
         myv_free(lzw_table_ptr + i);
     myv_free(&lzw_table);
-    return &lzw_codes;
+    return 1;
+}
+
+
+unsigned int fill_colors(unsigned char* color_table, unsigned int color_codes_size, uint16_t* color_codes, unsigned char* colors) {
+    unsigned char* pt = colors;
+    for (unsigned int i = 0; i < color_codes_size; i++) {
+        memcpy(pt, color_table + 3 * color_codes[i], 3);
+        pt += 3;
+    }
+    return 1;
 }
 

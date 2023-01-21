@@ -33,3 +33,21 @@ Time:    8.392
 Average: 0.182
 Initial algorythm without output
 
+
+Date:    Sat Jan 21 10:28:44 2023
+File:    se2017aug21t.gif
+Images:  66
+Time:    6.118
+Average: 0.093
+Algorythm with output
+LZWAlgorythm in C called from Python
+
+Date:    Sat Jan 21 10:30:49 2023
+File:    firework1.gif
+Images:  46
+Time:    5.669
+Average: 0.123
+Algorythm with output
+LZWAlgorythm in C called from Python
+
+
