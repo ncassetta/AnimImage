@@ -51,3 +51,63 @@ Algorythm with output
 LZWAlgorythm in C called from Python
 
 
+
+Date:    Sat Jan 21 17:49:51 2023
+File:    se2017aug21t.gif
+Images:  66
+Time:    6.300
+Average: 0.095
+"Algorythm with output
+LZWAlgorythm in C called from Python, optimized color tables
+
+Date:    Sat Jan 21 17:52:14 2023
+File:    firework1.gif
+Images:  46
+Time:    6.077
+Average: 0.132
+"Algorythm with output
+LZWAlgorythm in C called from Python, optimized color tables
+
+Date:    Sat Jan 21 17:57:31 2023
+File:    se2017aug21t.gif
+Images:  66
+Time:    3.400
+Average: 0.052
+"Algorythm with output
+LZWAlgorythm in C called from Python, optimized color tables, dropped
+double loop
+
+Date:    Sat Jan 21 17:59:00 2023
+File:    firework1.gif
+Images:  46
+Time:    3.360
+Average: 0.073
+"Algorythm with output
+LZWAlgorythm in C called from Python, optimized color tables, dropped
+double loop
+
+
+Date:    Sat Jan 21 18:19:19 2023
+File:    se2017aug21t.gif
+Images:  66
+Time:    0.057
+Average: 0.001
+"Algorythm with output
+LZWAlgorythm and fill_colors in C called from Python
+
+Date:    Sat Jan 21 18:19:52 2023
+File:    firework1.gif
+Images:  46
+Time:    0.164
+Average: 0.004
+"Algorythm with output
+LZWAlgorythm and fill_colors in C called from Python
+
+Date:    Thu Jan 26 09:31:06 2023
+File:    firework1.gif
+Images:  46
+Time:    0.186
+Average: 0.004
+"Algorythm with output
+LZWAlgorythm and fill_colors in C called from Python
+
