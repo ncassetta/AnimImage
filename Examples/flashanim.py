@@ -23,13 +23,11 @@ from random import randrange
 import pygame
 import animimage
 
-
+# data for flashing writings
 TEXTS = ("Bonus", "Big win", "Next level", "Game over")
 FONTS = ("Arial", "Courier", "Times", "Verdana") 
 SIZES = (36, 48, 60, 72)
 COLORS = ("yellow", "red", "dark green", "blue")
-
-
 
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
@@ -44,10 +42,10 @@ all_sprites = pygame.sprite.Group()
 # set timer for triggering the 1st writing
 pygame.time.set_timer(CUSTOM_EV, randrange(500, 2000))
 
+# flags for paused and persistent mode
+paused, persistent = False, False
 # flag for exiting the main loop
 done = False
-# flags for paused mode and persistent mode
-paused, persistent = False, False
 # main loop
 while not done:
     for ev in pygame.event.get():
@@ -84,7 +82,7 @@ while not done:
                 # choose a random font, size, text and color and render it into a pygame Surface
                 fnt = pygame.font.SysFont(FONTS[randrange(4)], SIZES[randrange(4)], bold=True, italic=randrange(2))
                 surf = fnt.render(TEXTS[randrange(4)], True, COLORS[randrange(4)])
-                # set the Surface as the FlashSprite image: this starts the alon
+                # set the Surface as the FlashSprite image: this starts the animation
                 anim.set_image(surf)
                 # choose a random position for the writing
                 anim.rect.topleft = (randrange(20, 800 - surf.get_width() - 20),

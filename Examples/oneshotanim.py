@@ -21,8 +21,8 @@
 import _setup
 from os.path import join
 from random import randrange
+import pygame
 import animimage, slicegif
-import pygame, random
 
 pygame.init()
 screen = pygame.display.set_mode((800, 600))

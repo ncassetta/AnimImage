@@ -30,30 +30,48 @@ LZWAlgorythm and fill_colors in C called from Python
 
 """
 
-# times for time log
-init_time = 0
-end_time = 0
+_debug, _log = False, False
 
+def set_debug(debug=None, log=None):
+    if debug is not None:
+        _debug = debug
+    if log is not None:
+        _log = log
+
+
+class GIFDecoderError(Exception):
+    def __init__(self, message, image=None):
+        if image:
+            message = message + " decoding image " + str(image)
+        super.__init__(message)
+        
 
 class GIFDecoder:
+    """An object which splits an animated GIF file into its frames.
+    
+    You can split a GIF file with the decode() method, obtaining a
+    list of pygame Surface object. Then you can get them with the
+    get_images() method or save them with the save_images() method.
     """
-    Object which splits an animated GIF file into its frames.
-    """
+    
     def __init__(self):
-        """
-    The constructor.
-        """
-        self.reset_all()
-        
-        libpath = os.path.join("GIFDecoder", "GIFDecoder.dll")
+        """The constructor."""
+        libpath = os.path.split(os.path.realpath(__file__))[0]
+        libpath = os.path.join(libpath, "GIFDecoder", "GIFDecoder.dll")
         self.lib = CDLL(libpath)
         self.lib.LZWAlgorythm.argtypes = (c_uint, c_uint, c_char_p, c_uint, POINTER(c_uint16))
         self.lib.LZWAlgorythm.restype = c_uint
         self.lib.fill_colors.argtypes = (c_char_p, c_uint, POINTER(c_uint16), POINTER(c_ubyte))
         self.lib.fill_colors.restype = c_uint
-        print(self.lib.__dict__)
+        
+        self.reset_all()
         
     def reset_all(self):
+        """Reset the class to its initial state.
+        
+        This is done automatically by the decode() method before decoding a file,
+        so usually you don't need to use this.
+        """
         self._buffer = bytearray()
         self._f = None
         self._screen_width = 0
@@ -66,17 +84,19 @@ class GIFDecoder:
         self._back_index = 0
         self._aspect_ratio = 0
         self._images = []
-        self.reset_graphics()
-        self.reset_image()
+        self._reset_graphics()
+        self._reset_image()
         
-    def reset_graphics(self):
+    def _reset_graphics(self):
+        ## INTERNAL FUNCTION
         self._disposal_method = 0
         self._user_input = False
         self._has_transparent_color = False
         self._delay_time = 0
         self._transparent_index = 0          
         
-    def reset_image(self):          
+    def _reset_image(self):
+        ## INTERNAL FUNCTION
         self._image_left_pos = 0
         self._image_top_pos = 0
         self._image_width = 0
@@ -89,9 +109,11 @@ class GIFDecoder:
         self._lzw_code_size = 0
         
     def _read_header(self):
+        """Read the  1st 9 bytes of the file, which contain
+        the header and the screen descriptor."""
         self._buffer = self._f.read(6)
         if self._buffer not in (b"GIF87a", b"GIF89a"):
-            raise Exception("Not a .GIF file")
+            raise GIFDecoderError("Not a .GIF file")
         self._screen_width = int.from_bytes(self._f.read(2), "little")
         self._screen_height = int.from_bytes(self._f.read(2), "little")
         self._buffer = self._f.read(1)
@@ -110,18 +132,19 @@ class GIFDecoder:
         while  size != _BLOCK_TERMINATOR:
             self._buffer += self._f.read(size)
             size = self._f.read(1)[0]
-            
-    def _read_blocks_debug(self):
-        totsize, bufsize, blocks = 0, 0, []
-        subsize = self._f.read(1)[0]
-        while  subsize != _BLOCK_TERMINATOR:
-            totsize += (subsize + 1)        # adds block size byte
-            bufsize += subsize
-            blocks.append(subsize)
-            self._f.read(subsize)
-            subsize = self._f.read(1)[0]
-        totsize += 1                        # for terminator
-        return totsize, bufsize, blocks
+    
+    ## USED DURING DEVELOPMENT FOR DEBUGGING        
+    #def _read_blocks_debug(self):
+        #totsize, bufsize, blocks = 0, 0, []
+        #subsize = self._f.read(1)[0]
+        #while  subsize != _BLOCK_TERMINATOR:
+            #totsize += (subsize + 1)        # adds block size byte
+            #bufsize += subsize
+            #blocks.append(subsize)
+            #self._f.read(subsize)
+            #subsize = self._f.read(1)[0]
+        #totsize += 1                        # for terminator
+        #return totsize, bufsize, blocks
     
     def print_image_attr(self):
         print("Image n.", len(self._images) + 1)
@@ -131,10 +154,10 @@ class GIFDecoder:
         print("Interlaced:", self._is_interlaced, " Local table:", self._has_local_table,
               " Transparent color:", self._transparent_index if self._has_transparent_color else "None")
             
-    def _LZWalgorythm(self): 
+    def _LZWalgorythm(self):
+        """Implement the LZW algorythm to decodify an image data block.""" 
         CLEAR = 2 ** self._lzw_code_size
         EOI = CLEAR + 1
-        
         lzw_table = [(i,) for i in range(2 ** self._lzw_code_size)]
         lzw_table.extend((CLEAR, EOI))
         csize = self._lzw_code_size + 1
@@ -156,13 +179,13 @@ class GIFDecoder:
             if flag not in (_NORMAL, _DEFERRED):
                 if flag == _MUSTCLEAR:
                     if code != CLEAR:
-                        raise Exception("Bad LZW code")
+                        raise GIFDecoderError("Bad LZW code", image=len(self._images)+1)
                     flag = _FIRST
                 elif flag == _FIRST:
                     if code < CLEAR:
                         self._color_codes.extend(lzw_table[code])
                     else:
-                        raise Exception("Bad LZW code")
+                        raise GIFDecoderError("Bad LZW code", image=len(self._images)+1)
                     flag = _NORMAL
             elif code == EOI:
                 break
@@ -191,20 +214,21 @@ class GIFDecoder:
                         flag = _DEFERRED        
             oldcode = code
         
-            #for i in range(len(lzw_table)):
-            #    print(i + 1, lzw_table[i])
-        #for i in range(len(self._color_codes) // self._image_width + 1):
-            #for j in range(self._image_width):
-                #if self._image_width * i + j < len(self._color_codes):
-                    #print(self._color_codes[self._image_width * i + j], end=' ')
-            #print()
-        #print()
-        
     
     def decode(self, fname):
-        self.log_start()
+        """Decode a GIF file and return its frames as a list of pygame Surface.
+        
+        You can get the list of images of the last decoded file also with the
+        get_images() method.
+        This can throw various GIFDecoderError if the decoding process fails for
+        some cause.
+        \param fname the name of the GIF file to be slicen 
+        """
+        if _log:
+            self._log_start()
+        if _debug:
+            print ("Start decoding", fname)
         self._fname = fname
-        print ("Start decoding", fname)
         self.reset_all()
         with open(fname, "r+b") as self._f:
             self._read_header()
@@ -216,7 +240,8 @@ class GIFDecoder:
                 if self._buffer[0] == _EXTENSION_INTRODUCER:
                     self._buffer = self._f.read(1)
                     if self._buffer[0] == _GRAPHIC_CONTROL_EXTENSION:
-                        print("Graphic control extension")
+                        if _debug:
+                            print("Graphic control extension")
                         self._read_blocks()
                         self._disposal_method = (self._buffer[0] & 0x1C) >> 2
                         self._user_input = bool(self._buffer[0] & 0x02)
@@ -224,22 +249,26 @@ class GIFDecoder:
                         self._delay_time = int.from_bytes(self._buffer[1:3], "little")
                         self._transparent_index = self._buffer[3]    
                     elif self._buffer[0] == _COMMENT_EXTENSION:
-                        print("Comment extension")
                         self._read_blocks()
-                        print(self._buffer.decode("utf-8"))
+                        if _debug:
+                            print("Comment extension")
+                            print(self._buffer.decode("utf-8"))
                     elif self._buffer[0] == _PLAIN_TEXT_EXTENSION:
-                        print("Plain text extension")
                         self._read_blocks()
-                        print(self._buffer.decode("utf-8"))
+                        if _debug:
+                            print("Plain text extension")
+                            print(self._buffer.decode("utf-8"))
                     elif self._buffer[0] == _APPLICATION_EXTENSION:
-                        print("Application extension")
                         self._read_blocks()
-                        print(self._buffer.decode("utf-8"))
+                        if _debug:
+                            print("Application extension")
+                            print(self._buffer.decode("utf-8"))
                     else:
                         raise ValueError("Unknown extension")
                 elif self._buffer[0] == _IMAGE_SEPARATOR:
-                    print("Image n.", len(self._images) + 1)
-                    self.reset_image()
+                    if _debug:
+                        print("Image n.", len(self._images) + 1)
+                    self._reset_image()
                     self._image_left_pos = int.from_bytes(self._f.read(2), "little")
                     self._image_top_pos = int.from_bytes(self._f.read(2), "little")
                     self._image_width = int.from_bytes(self._f.read(2), "little")
@@ -261,7 +290,7 @@ class GIFDecoder:
                                                  c_char_p(bytes(self._buffer)),
                                                  c_uint(color_codes_len),
                                                  color_codes):
-                        raise ValueError("LZW algorythm failed, file partially decoded!")
+                        raise GIFDecoderError("LZW algorythm failed", image=len(self._images)+1)
                     #try:
                         #self._LZWalgorythm()
                     #except:
@@ -271,7 +300,7 @@ class GIFDecoder:
                     elif self._has_global_table:
                         color_table = self._global_color_table
                     else:
-                        raise ValueError("No color table")
+                        raise GIFDecoderError("No color table", image=len(self._images)+1)
                     array = (c_ubyte * (3 * color_codes_len))()
                     self.lib.fill_colors(color_table, c_uint(color_codes_len), color_codes, array)
                     #array = bytearray(3 * self._image_width * self._image_height)
@@ -289,11 +318,13 @@ class GIFDecoder:
                         screen.blit(previous, (0, 0))
                     screen.blit(surf, (self._image_left_pos, self._image_top_pos))          
                     self._images.append(screen.copy())
-                    self.reset_graphics()
+                    self._reset_graphics()
                                         
                 self._buffer = self._f.read(1)
-            print("End of input stream")
-            self.log_end()
+            if _debug:
+                print("End of input stream")
+            if _log:
+                self._log_end()
         return self._images          
         
     
@@ -450,11 +481,11 @@ class GIFDecoder:
                 self._buffer = self._f.read(1)
             print("End of input stream")
             
-    def log_start(self):
+    def _log_start(self):
         self.logf = open("GIFDecoder.log", "a")
         self.init_time = time.time_ns()
         
-    def log_end(self):
+    def _log_end(self):
         self.end_time = time.time_ns()
         if self.logf:
             time_diff = self.end_time - self.init_time
@@ -469,48 +500,51 @@ class GIFDecoder:
             
     
     def get_images(self):
+        """Return the list of images of the last decoded GIF file."""
         return self._images
     
-    def save_images(self, prefix=None, ext=".png", form="04d"):
+    def save_images(self, prefix=None, form="04d", ext=".png"):
         if (self._images):
             if not prefix:
                 prefix = self._fname
+            if ext not in (".png", ".jpg", "jpeg"):
+                raise ValueError("Invalid extension") 
             s = prefix + "{:" + form + "}" + ext
             for i in range(len(self._images)):
                 fname = s.format(i)
                 with open(fname, "r+b") as f:
-                    save(self._images[i], f)
+                    pygame.image.save_extended(self._images[i], f)
         else:
-            raise("Empty image list")
+            raise ValueError("Empty image list")
         
 
     
         
     
+if __name__ == "__main__": 
+    from slicesheet import viewlist
     
-from slicesheet import viewlist
-
-dec = GIFDecoder()
-fname = input("GIF file name: ")
-dec.decode(fname)
-pygame.init()
-
-viewlist(dec.get_images(), 200)
-
-##img = dec.images[0].copy()
-##screen = pygame.display.set_mode((4 * (dec.screen_width + 10) + 10, (len(dec.images) // 4 + 1) * (dec.screen_height + 10) + 10))
-##screen.fill("white")
-##for i in range(len(dec.images)):
-    ###x, y = i // 4, i % 4
-    ###screen.blit(dec.images[i], (10 + x * (dec.screen_width + 10), 10 + y * (dec.screen_height + 10)))
+    dec = GIFDecoder()
+    fname = input("GIF file name: ")
+    dec.decode(fname)
+    pygame.init()
+    
+    viewlist(dec.get_images(), 200)
+    
+    ##img = dec.images[0].copy()
+    ##screen = pygame.display.set_mode((4 * (dec.screen_width + 10) + 10, (len(dec.images) // 4 + 1) * (dec.screen_height + 10) + 10))
     ##screen.fill("white")
-    ##screen.blit(dec.images[i], (100, 100))
-    ##pygame.display.flip()
-    ##pygame.time.wait(50)
-#print("Quitting pygame")
-#pygame.quit()
-
-
-#dec = GIFDecoder()
-#fname = input("GIF file name: ")
-#dec.debug_blocks(fname)
+    ##for i in range(len(dec.images)):
+        ###x, y = i // 4, i % 4
+        ###screen.blit(dec.images[i], (10 + x * (dec.screen_width + 10), 10 + y * (dec.screen_height + 10)))
+        ##screen.fill("white")
+        ##screen.blit(dec.images[i], (100, 100))
+        ##pygame.display.flip()
+        ##pygame.time.wait(50)
+    #print("Quitting pygame")
+    #pygame.quit()
+    
+    
+    #dec = GIFDecoder()
+    #fname = input("GIF file name: ")
+    #dec.debug_blocks(fname)

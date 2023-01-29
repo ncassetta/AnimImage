@@ -17,6 +17,7 @@
 ##    Nicola Cassetta
 ##    ncassetta@tiscali.it
 
+
 import _setup
 from os.path import join
 import animimage, slicesheet
@@ -25,26 +26,26 @@ import pygame, random
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
 clk = pygame.time.Clock()
-GHOST_EV = pygame.event.custom_type()
+CUSTOM_EV = pygame.event.custom_type()
 
 all_images = slicesheet.slicesheet(join("..", "carro.png"), 10, 4, 2380)
 images = (all_images[0:10], all_images[10:20], all_images[20:30], all_images[30:40])
 all_sprites = pygame.sprite.LayeredUpdates()
 
-pygame.time.set_timer(NEWCAR_EV, random.randrange(500, 2000))
+pygame.time.set_timer(CUSTOM_EV, random.randrange(500, 2000))
 done = False
 while not done:
     for ev in pygame.event.get():
         if ev.type == pygame.QUIT:
             done = True
-        elif ev.type == NEWCAR_EV:
+        elif ev.type == CUSTOM_EV:
             anim = animimage.AnimSprite()
             anim.set_images(images[random.randrange(4)], True)
             anim.rect.topleft = (-anim.rect.width, random.randrange(150, 400))
             if not pygame.sprite.spritecollide(anim, all_sprites, False):
                 all_sprites.add(anim)
                 anim.set_rate(2.5)
-            pygame.time.set_timer(NEWCAR_EV, random.randrange(2000, 6000))
+            pygame.time.set_timer(CUSTOM_EV, random.randrange(2000, 6000))
             
     for sp in all_sprites:
         sp.rect.x += 2

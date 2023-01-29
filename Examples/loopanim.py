@@ -17,6 +17,7 @@
 ##    Nicola Cassetta
 ##    ncassetta@tiscali.it
 
+
 import _setup
 from os.path import join
 from random import randrange
@@ -28,7 +29,10 @@ screen = pygame.display.set_mode((800, 600))
 clk = pygame.time.Clock()
 CUSTOM_EV = pygame.event.custom_type()
 
+# slice a sheet of images into its components
 all_images = slicesheet.slicesheet(join("..", "carro.png"), 10, 4, 2380)
+# make from them four lists of animations:
+# images[0] yellow car   images[1] blue car   images[2] red car    images[3] purple car 
 images = (all_images[0:10], all_images[10:20], all_images[20:30], all_images[30:40])
 all_sprites = pygame.sprite.Group()
 
@@ -70,7 +74,7 @@ while not done:
                 paused = not paused
             # pressing left and right arrows increments or decrements car speed
             elif ev.key in (pygame.K_LEFT, pygame.K_RIGHT):
-                # set new car speed
+                # set the new speed
                 speed = max(1.0, speed - 0.5) if ev.key == pygame.K_LEFT else min(4.0, speed + 0.5)
                 # update animation speed
                 anim_rate = 4 / speed
@@ -93,6 +97,9 @@ while not done:
                 all_sprites.add(anim)
                 # set the animation rate
                 anim.set_rate(anim_rate)
+            # if animations are stopped stops the new car
+            if paused:
+                anim.anim_stop()
             pygame.time.set_timer(CUSTOM_EV, randrange(2000, 6000))
             
     # if you have a non-integer speed you must alternate between speed - 0.5 and
