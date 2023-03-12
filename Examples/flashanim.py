@@ -1,4 +1,7 @@
+##    This file is part of
 ##    animimage - Simple animated Sprite extension for pygame
+##    Copyright (C) 2023  Nicola Cassetta
+##    See <https://github.com/ncassetta/Nictk>
 ##
 ##    This file is free software; you can redistribute it and/or
 ##    modify it under the terms of the GNU Library General Public
@@ -13,9 +16,6 @@
 ##    You should have received a copy of the GNU Library General Public
 ##    License along with this file; if not, write to the Free
 ##    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-##
-##    Nicola Cassetta
-##    ncassetta@tiscali.it
 
 
 import _setup

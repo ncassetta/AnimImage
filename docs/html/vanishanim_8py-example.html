@@ -98,51 +98,65 @@ $(document).ready(function(){initNavTree('vanishanim_8py-example.html',''); init
 <p >An example of the most common widget options.</p>
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">import</span> _setup</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">from</span> os.path <span class="keyword">import</span> join</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">import</span> animimage, slicesheet</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">import</span> pygame, random</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>pygame.init()</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>screen = pygame.display.set_mode((800, 600))</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>clk = pygame.time.Clock()</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>GHOST_EV = pygame.event.custom_type()</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>all_images = <a class="code hl_function" href="slicesheet_8py.html#a440918fe61ff6c3084d992dd961a02b8">slicesheet.slicesheet</a>(join(<span class="stringliteral">&quot;..&quot;</span>, <span class="stringliteral">&quot;carro.png&quot;</span>), 10, 4, 2380)</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>images = (all_images[0:10], all_images[10:20], all_images[20:30], all_images[30:40])</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>all_sprites = pygame.sprite.LayeredUpdates()</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>pygame.time.set_timer(NEWCAR_EV, random.randrange(500, 2000))</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>done = <span class="keyword">False</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keywordflow">while</span> <span class="keywordflow">not</span> done:</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">for</span> ev <span class="keywordflow">in</span> pygame.event.get():</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">if</span> ev.type == pygame.QUIT:</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            done = <span class="keyword">True</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">elif</span> ev.type == NEWCAR_EV:</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            anim = <a class="code hl_class" href="classanimimage_1_1_anim_sprite.html">animimage.AnimSprite</a>()</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            anim.set_images(images[random.randrange(4)], <span class="keyword">True</span>)</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            anim.rect.topleft = (-anim.rect.width, random.randrange(150, 400))</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> pygame.sprite.spritecollide(anim, all_sprites, <span class="keyword">False</span>):</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                all_sprites.add(anim)</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                anim.set_rate(2.5)</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            pygame.time.set_timer(NEWCAR_EV, random.randrange(2000, 6000))</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">for</span> sp <span class="keywordflow">in</span> all_sprites:</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        sp.rect.x += 2</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> sp.rect.x &gt; screen.get_width():</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            sp.kill()</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    screen.fill(<span class="stringliteral">&quot;aqua&quot;</span>)</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    all_sprites.update()</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    all_sprites.draw(screen)</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    pygame.display.flip()</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    clk.tick(30)</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>pygame.quit()</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    </div>
-<div class="ttc" id="aclassanimimage_1_1_anim_sprite_html"><div class="ttname"><a href="classanimimage_1_1_anim_sprite.html">animimage.AnimSprite</a></div><div class="ttdoc">An animated Sprite class to be used within pygame.</div><div class="ttdef"><b>Definition:</b> animimage.py:47</div></div>
-<div class="ttc" id="aslicesheet_8py_html_a440918fe61ff6c3084d992dd961a02b8"><div class="ttname"><a href="slicesheet_8py.html#a440918fe61ff6c3084d992dd961a02b8">slicesheet.slicesheet</a></div><div class="ttdeci">def slicesheet(sheet, h, v, orig_w=None, orig_h=None)</div><div class="ttdef"><b>Definition:</b> slicesheet.py:3</div></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">import</span> _setup</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">from</span> random <span class="keyword">import</span> randrange</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">import</span> pygame</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">import</span> animimage</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment"># colors for squares</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>COLORS = (<span class="stringliteral">&quot;red&quot;</span>, <span class="stringliteral">&quot;yellow&quot;</span>, <span class="stringliteral">&quot;blue&quot;</span>, <span class="stringliteral">&quot;orange&quot;</span>, <span class="stringliteral">&quot;green&quot;</span>, <span class="stringliteral">&quot;purple&quot;</span>)</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>pygame.init()</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>screen = pygame.display.set_mode((800, 600))</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>clk = pygame.time.Clock()</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>all_sprites = pygame.sprite.LayeredUpdates()</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment"># uncomment this to see debug info about sprites</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment">#animimage.set_debug(True)</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment"># position the 1st square</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>surf = pygame.Surface((60, 60))</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>surf.fill(COLORS[randrange(len(COLORS))])</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>rect = surf.get_rect()</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>rect.topleft = randrange(740), randrange(540)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="comment"># flag for exiting the main loop</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>done = <span class="keyword">False</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="comment"># main loop</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keywordflow">while</span> <span class="keywordflow">not</span> done:</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">for</span> ev <span class="keywordflow">in</span> pygame.event.get():</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">if</span> ev.type == pygame.QUIT:</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            done = <span class="keyword">True</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="comment"># when you click on the square ...</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">elif</span> ev.type == pygame.MOUSEBUTTONDOWN <span class="keywordflow">and</span> rect.collidepoint(ev.pos):</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="comment"># ... a VanishSprite is created from it ...</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            anim = <a class="code hl_class" href="classanimimage_1_1_vanish_sprite.html">animimage.VanishSprite</a>(all_sprites)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            anim.set_image(surf.copy())</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="comment"># ... random parameters are given ...</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            rate = randrange(2, 9) / 2</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            scale = randrange(11, 20) / 10</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            frames = randrange(4, 11)</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            direct = randrange(-4, 5), randrange(-4, 5)</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            anim.set_param(rate=rate, scale=scale, frames=frames, dir=direct)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            anim.rect = rect.copy()</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="comment"># ... and another square is created</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            rect.topleft = randrange(740), randrange(540)</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            surf.fill(COLORS[randrange(len(COLORS))])        </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    screen.fill(<span class="stringliteral">&quot;aqua&quot;</span>)</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="comment"># make all animation progress</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    all_sprites.update()</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    all_sprites.draw(screen)</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    screen.blit(surf, rect)</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    pygame.display.flip()</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    clk.tick(30)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>pygame.quit()</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    </div>
+<div class="ttc" id="aclassanimimage_1_1_vanish_sprite_html"><div class="ttname"><a href="classanimimage_1_1_vanish_sprite.html">animimage.VanishSprite</a></div><div class="ttdoc">A vanishing Sprite class to be used within pygame.</div><div class="ttdef"><b>Definition:</b> animimage.py:195</div></div>
 </div><!-- fragment --> </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -1,4 +1,7 @@
+##    This file is part of
 ##    animimage - Simple animated Sprite extension for pygame
+##    Copyright (C) 2023  Nicola Cassetta
+##    See <https://github.com/ncassetta/Nictk>
 ##
 ##    This file is free software; you can redistribute it and/or
 ##    modify it under the terms of the GNU Library General Public
@@ -13,16 +16,13 @@
 ##    You should have received a copy of the GNU Library General Public
 ##    License along with this file; if not, write to the Free
 ##    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-##
-##    Nicola Cassetta
-##    ncassetta@tiscali.it
 
 
 import _setup
 from os.path import join
 from random import randrange
 import pygame
-import animimage, slicesheet
+import animimage
 
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
@@ -30,7 +30,8 @@ clk = pygame.time.Clock()
 CUSTOM_EV = pygame.event.custom_type()
 
 # slice a sheet of images into its components
-all_images = slicesheet.slicesheet(join("..", "carro.png"), 10, 4, 2380)
+slicer = animimage.SheetSlicer()
+all_images = slicer.slice(join("..", "carro.png"), 10, 4, 2380)
 # make from them four lists of animations:
 # images[0] yellow car   images[1] blue car   images[2] red car    images[3] purple car 
 images = (all_images[0:10], all_images[10:20], all_images[20:30], all_images[30:40])
@@ -90,7 +91,7 @@ while not done:
             # choose a random car (four different colours)
             anim.set_images(images[randrange(4)], True)
             # choose a random height for the car
-            anim.rect.topleft = (-anim.rect.width, randrange(150, 400))
+            anim.rect.topleft = (-anim.rect.width, randrange(100, 400))
             # check if the car overlaps another animation
             if not pygame.sprite.spritecollide(anim, all_sprites, False):
                 # if not add the animation to the main Group, so it can be drawn

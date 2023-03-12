@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['loop_0',['loop',['../classanimimage_1_1_anim_sprite.html#a56ab5fad99f595218aae18d1b7cce0d2',1,'animimage::AnimSprite']]]
+  ['hold_0',['hold',['../classanimimage_1_1_flash_sprite.html#ae524c3e8ce8bf4c503c7d8a1f79bea5f',1,'animimage::FlashSprite']]]
 ];

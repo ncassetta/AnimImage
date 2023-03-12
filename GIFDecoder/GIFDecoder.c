@@ -49,8 +49,10 @@ unsigned int LZWAlgorythm(unsigned int lzw_code_size, unsigned int len, unsigned
     enum t_status flag = MUSTCLEAR;
     uint16_t code, oldcode;
 
+    /*
     printf("Arguments:\nlzw_code_size %d\nlen %d\nbytes %p\ncodes_len %d\nlzw_codes_ptr %p\n",
            lzw_code_size, len, bytes, codes_len, lzw_codes_ptr);
+    */
 
     lzw_table_ptr = (struct myvector *)myv_init(&lzw_table, sizeof(struct myvector), (1 << lzw_code_size) + 2, false);
     for (unsigned int i = 0; i <= EOI; i++) {

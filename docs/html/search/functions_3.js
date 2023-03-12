@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['update_0',['update',['../classanimimage_1_1_anim_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc',1,'animimage.AnimSprite.update()'],['../classanimimage_1_1_vanish_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc',1,'animimage.VanishSprite.update()'],['../classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc',1,'animimage.FlashSprite.update()']]]
+  ['get_5fimages_0',['get_images',['../classslicegif_1_1_g_i_f_decoder.html#ab255f2f8c0ad5ac236f6610f08e5ffe2',1,'slicegif.GIFDecoder.get_images()'],['../classslicesheet_1_1_sheet_slicer.html#a81fb70dfa8e5e8fb16b959cb8c07e8dd',1,'slicesheet.SheetSlicer.get_images()']]]
 ];

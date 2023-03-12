@@ -7,5 +7,8 @@ var annotated_dup =
     ] ],
     [ "slicegif", null, [
       [ "GIFDecoder", "classslicegif_1_1_g_i_f_decoder.html", "classslicegif_1_1_g_i_f_decoder" ]
+    ] ],
+    [ "slicesheet", null, [
+      [ "SheetSlicer", "classslicesheet_1_1_sheet_slicer.html", "classslicesheet_1_1_sheet_slicer" ]
     ] ]
 ];

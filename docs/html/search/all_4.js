@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['image_0',['image',['../classanimimage_1_1_anim_sprite.html#a42cb5f5737262947250c709931232c69',1,'animimage::AnimSprite']]],
-  ['images_1',['images',['../classanimimage_1_1_anim_sprite.html#a51dcdeb45e5f187043150dc943c52faf',1,'animimage::AnimSprite']]]
+  ['get_5fimages_0',['get_images',['../classslicegif_1_1_g_i_f_decoder.html#ab255f2f8c0ad5ac236f6610f08e5ffe2',1,'slicegif.GIFDecoder.get_images()'],['../classslicesheet_1_1_sheet_slicer.html#a81fb70dfa8e5e8fb16b959cb8c07e8dd',1,'slicesheet.SheetSlicer.get_images()']]],
+  ['gifdecoder_1',['GIFDecoder',['../classslicegif_1_1_g_i_f_decoder.html',1,'slicegif']]]
 ];

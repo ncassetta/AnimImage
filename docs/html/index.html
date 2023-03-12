@@ -95,14 +95,14 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
   <div class="headertitle"><div class="title">AnimImage </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p >AnimImage is a set of classes written by Nicola Cassetta, implementing animated sprites to be used within pygame. There are various types of animations; all of them allow the user to control the speed of the animation, and to stop and restart it.</p>
+<div class="textblock"><p >AnimImage is a set of Python 3 classes written by Nicola Cassetta, implementing animated sprites to be used within the pygame library (see <a href="https://www.pygame.org">https://www.pygame.org</a>). There are various types of animations:</p>
 <ul>
 <li><a class="el" href="classanimimage_1_1_anim_sprite.html" title="An animated Sprite class to be used within pygame.">animimage.AnimSprite</a> an animated Sprite class. The user must set a list of frames (pygame Surface) which will be shown in sequence; moreover he can choose between a one-shot animation (the Sprite will be killed at the end of the sequence) or a looped one.</li>
 <li><a class="el" href="classanimimage_1_1_vanish_sprite.html" title="A vanishing Sprite class to be used within pygame.">animimage.VanishSprite</a> a vanishing Sprite class. Starting from a given image (pygame Surface) it generates a list of frames with increasing transparence which will be shown in sequence, giving the impression of a disappearing image. Moreover the image can change its dimensions (growing or shrinking) and move in a fixed direction during the animation.</li>
-<li><a class="el" href="classanimimage_1_1_flash_sprite.html" title="A flashing Sprite class to be used within pygame.">animimage.FlashSprite</a> a flashing Sprite class. Starting from a given image (pygame Surface) it shows and hides it for a given number of times. After them you can choose if mantaining the Sprite shown or not.</li>
+<li><a class="el" href="classanimimage_1_1_flash_sprite.html" title="A flashing Sprite class to be used within pygame.">animimage.FlashSprite</a> a flashing Sprite class. Starting from a given image (pygame Surface) it shows and hides it for a given number of times. After them you can mantain the Sprite shown or kill it.</li>
 </ul>
-<p >All three classes allow the user to control the rate of the animation and to stop and restart it. They are subclasses of the Sprite object, so they can be added and deleted to pygame groups via usual methods. The update() method is used in all three classes to make the animation progress, so, when subclassing them remember, if you subclass update(), to call the base class method.</p>
-<p >AnimImage includes also animimage.GIFDecoder, an object which splits an animated GIF file into its frames. </p>
+<p >All three classes allow the user to control the rate of the animation and to stop and restart it. They are subclasses of the Sprite object, so they can be added and deleted to pygame groups via usual methods. The update() method is used in all three classes to make the animation progress, so when subclassing them remember, if you subclass update(), to call the base class method.</p>
+<p >AnimImage includes also <a class="el" href="classslicegif_1_1_g_i_f_decoder.html" title="An object which splits an animated GIF file into its frames.">slicegif.GIFDecoder</a>, an object which splits an animated GIF file into its frames and <a class="el" href="classslicesheet_1_1_sheet_slicer.html" title="An object which splits a rectangular image into subframes.">slicesheet.SheetSlicer</a>, an object which separates the various images of a big frameset into separated Surface objects. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->

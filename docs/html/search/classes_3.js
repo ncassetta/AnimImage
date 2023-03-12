@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['vanishsprite_0',['VanishSprite',['../classanimimage_1_1_vanish_sprite.html',1,'animimage']]]
+  ['sheetslicer_0',['SheetSlicer',['../classslicesheet_1_1_sheet_slicer.html',1,'slicesheet']]]
 ];
