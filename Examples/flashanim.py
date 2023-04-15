@@ -89,7 +89,7 @@ while not done:
                                      randrange(20, 600 - surf.get_height() - 20))
                 # check if the writing overlaps another animation (only if not in persistent mode)
                 if not pygame.sprite.spritecollide(anim, all_sprites, False) or persistent:
-                    # if not add the animation to the main Group, so it can be drawn
+                    # add the animation to the main Group, so it can be drawn
                     all_sprites.add(anim)
                     # set a random speed for flashing and persistent on if in persistent mode
                     anim.set_param(rate=randrange(10, 18) / 2, flashes=randrange(4, 9), hold=persistent)

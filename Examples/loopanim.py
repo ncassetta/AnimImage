@@ -17,9 +17,7 @@
 ##    License along with this file; if not, write to the Free
 ##    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-
 import _setup
-from os.path import join
 from random import randrange
 import pygame
 import animimage
@@ -31,7 +29,7 @@ CUSTOM_EV = pygame.event.custom_type()
 
 # slice a sheet of images into its components
 slicer = animimage.SheetSlicer()
-all_images = slicer.slice(join("..", "carro.png"), 10, 4, 2380)
+all_images = slicer.slice("carro.png", 10, 4, 2380)
 # make from them four lists of animations:
 # images[0] yellow car   images[1] blue car   images[2] red car    images[3] purple car 
 images = (all_images[0:10], all_images[10:20], all_images[20:30], all_images[30:40])

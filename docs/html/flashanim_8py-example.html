@@ -170,7 +170,7 @@ $(document).ready(function(){initNavTree('flashanim_8py-example.html',''); initR
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                                     randrange(20, 600 - surf.get_height() - 20))</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                <span class="comment"># check if the writing overlaps another animation (only if not in persistent mode)</span></div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                <span class="keywordflow">if</span> <span class="keywordflow">not</span> pygame.sprite.spritecollide(anim, all_sprites, <span class="keyword">False</span>) <span class="keywordflow">or</span> persistent:</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                    <span class="comment"># if not add the animation to the main Group, so it can be drawn</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                    <span class="comment"># add the animation to the main Group, so it can be drawn</span></div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                    all_sprites.add(anim)</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                    <span class="comment"># set a random speed for flashing and persistent on if in persistent mode</span></div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                    anim.set_param(rate=randrange(10, 18) / 2, flashes=randrange(4, 9), hold=persistent)</div>
@@ -186,7 +186,7 @@ $(document).ready(function(){initNavTree('flashanim_8py-example.html',''); initR
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>pygame.quit()</div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            </div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    </div>
-<div class="ttc" id="aclassanimimage_1_1_flash_sprite_html"><div class="ttname"><a href="classanimimage_1_1_flash_sprite.html">animimage.FlashSprite</a></div><div class="ttdoc">A flashing Sprite class to be used within pygame.</div><div class="ttdef"><b>Definition:</b> animimage.py:349</div></div>
+<div class="ttc" id="aclassanimimage_1_1_flash_sprite_html"><div class="ttname"><a href="classanimimage_1_1_flash_sprite.html">animimage.FlashSprite</a></div><div class="ttdoc">A flashing Sprite class to be used within pygame.</div><div class="ttdef"><b>Definition:</b> animimage.py:369</div></div>
 </div><!-- fragment --> </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

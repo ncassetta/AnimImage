@@ -6,7 +6,10 @@
 /// + animimage.FlashSprite a flashing Sprite class. Starting from a given image (pygame Surface) it shows and hides it for a given number of times. After them you can mantain the Sprite shown or kill it.
 ///
 /// All three classes allow the user to control the rate of the animation and to stop and restart it.
-/// They are subclasses of the Sprite object, so they can be added and deleted to pygame groups via usual methods. The update() method is used in all three classes to make the animation progress, so when subclassing them remember, if you subclass update(), to call the base class method.
+/// They are subclasses of the Sprite object, so they can be added and deleted to pygame groups via usual methods. Their use is similar to that of pygame Sprites:
+/// + the constructor allows the user to add the object to one or more groups;
+/// + after creating the object you need to call another method which defines the _image_ and _rect_ attributes of the Sprite (see animimage.AnimSprite.set_images(), animimage.VanishSprite.set_image() and animimage.FlashSprite.set_image()). This method also starts drawing the object;
+/// + the update() method is used in all three classes to make the animation progress, so when subclassing them remember, if you subclass update(), to call the base class method.
 ///
-/// AnimImage includes also slicegif.GIFDecoder, an object which splits an animated GIF file into its frames and slicesheet.SheetSlicer, an object which separates the various images of a big frameset into separated Surface objects.
+/// AnimImage includes also animimage.GIFDecoder, an object which splits an animated GIF file into its frames and animimage.SheetSlicer, an object which separates the various images of a big frameset into separated Surface objects.
 ///

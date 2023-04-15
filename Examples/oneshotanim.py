@@ -31,7 +31,7 @@ CUSTOM_EV = pygame.event.custom_type()
 
 images = []
 dec = animimage.GIFDecoder()
-images = dec.decode(join("..", "firework1.gif")).copy()
+images = dec.decode("firework1.gif").copy()
 for img in images:
     img.set_colorkey(images[0].get_at((1, 0)))
 

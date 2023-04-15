@@ -98,114 +98,112 @@ $(document).ready(function(){initNavTree('loopanim_8py-example.html',''); initRe
 <p >An example of the usage of AnimSprite class with looped animations. Cars move from left to right: you can pause animations (not moving) pressing SPACE and change their speed with LEFT and RIGHT arrow keys.</p>
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">import</span> _setup</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">from</span> os.path <span class="keyword">import</span> join</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">from</span> random <span class="keyword">import</span> randrange</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">import</span> pygame</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">import</span> animimage</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>pygame.init()</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>screen = pygame.display.set_mode((800, 600))</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>clk = pygame.time.Clock()</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>CUSTOM_EV = pygame.event.custom_type()</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment"># slice a sheet of images into its components</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>slicer = <a class="code hl_class" href="classslicesheet_1_1_sheet_slicer.html">slicesheet.SheetSlicer</a>()</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>all_images = slicer.slice(join(<span class="stringliteral">&quot;..&quot;</span>, <span class="stringliteral">&quot;carro.png&quot;</span>), 10, 4, 2380)</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment"># make from them four lists of animations:</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment"># images[0] yellow car   images[1] blue car   images[2] red car    images[3] purple car </span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>images = (all_images[0:10], all_images[10:20], all_images[20:30], all_images[30:40])</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>all_sprites = pygame.sprite.Group()</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment"># uncomment this to see debug info about sprites</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment">#animimage.set_debug(True)</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="comment"># the speed of the cars in pixel per 30th of sec. It can vary from 1.0 to 4.0 at</span></div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="comment"># steps of 0.5 </span></div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>speed = 2.0</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="comment"># the speed of animations in 30th of sec per frame (see animimage.set_rate())</span></div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>anim_rate = 4 / speed</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="comment"># internal variable (see below)</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>offset = 0.0</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>print(<span class="stringliteral">&quot;speed = {:2.1f}   anim_rate = {:4.2f}&quot;</span>.format(speed, anim_rate))</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment"># set timer for triggering the 1st car</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>pygame.time.set_timer(CUSTOM_EV, randrange(500, 2000))</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment"># flag for paused mode</span></div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>paused = <span class="keyword">False</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment"># flag for exiting the main loop</span></div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>done = <span class="keyword">False</span></div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="comment"># main loop</span></div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keywordflow">while</span> <span class="keywordflow">not</span> done:</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">for</span> ev <span class="keywordflow">in</span> pygame.event.get():</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">if</span> ev.type == pygame.QUIT:</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            done = <span class="keyword">True</span></div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">elif</span> ev.type == pygame.KEYDOWN:</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="comment"># pressing SPACE toggles paused mode</span></div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <span class="keywordflow">if</span> ev.key == pygame.K_SPACE:</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="keywordflow">if</span> <span class="keywordflow">not</span> paused:</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                    <span class="comment"># stop all animations</span></div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                    <span class="keywordflow">for</span> spr <span class="keywordflow">in</span> all_sprites:</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                        spr.anim_stop()</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <span class="keywordflow">else</span>:</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                    <span class="comment"># restart all stopped animations</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                    <span class="keywordflow">for</span> spr <span class="keywordflow">in</span> all_sprites:</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                        spr.anim_start()</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                paused = <span class="keywordflow">not</span> paused</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="comment"># pressing left and right arrows increments or decrements car speed</span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">elif</span> ev.key <span class="keywordflow">in</span> (pygame.K_LEFT, pygame.K_RIGHT):</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                <span class="comment"># set the new speed</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                speed = max(1.0, speed - 0.5) <span class="keywordflow">if</span> ev.key == pygame.K_LEFT <span class="keywordflow">else</span> min(4.0, speed + 0.5)</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                <span class="comment"># update animation speed</span></div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                anim_rate = 4 / speed</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                <span class="comment"># reset offset</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                offset = 0.0</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                <span class="keywordflow">for</span> spr <span class="keywordflow">in</span> all_sprites:</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                    spr.set_rate(anim_rate)</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                print(<span class="stringliteral">&quot;speed = {:2.1f}   anim_rate = {:4.2f}&quot;</span>.format(speed, anim_rate))</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="comment"># triggers a new car</span></div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">elif</span> ev.type == CUSTOM_EV:</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="comment"># new AnimSprite</span></div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            anim = <a class="code hl_class" href="classanimimage_1_1_anim_sprite.html">animimage.AnimSprite</a>()</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="comment"># choose a random car (four different colours)</span></div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            anim.set_images(images[randrange(4)], <span class="keyword">True</span>)</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="comment"># choose a random height for the car</span></div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            anim.rect.topleft = (-anim.rect.width, randrange(100, 400))</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <span class="comment"># check if the car overlaps another animation</span></div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> pygame.sprite.spritecollide(anim, all_sprites, <span class="keyword">False</span>):</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                <span class="comment"># if not add the animation to the main Group, so it can be drawn</span></div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                all_sprites.add(anim)</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                <span class="comment"># set the animation rate</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                anim.set_rate(anim_rate)</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="comment"># if animations are stopped stops the new car</span></div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            <span class="keywordflow">if</span> paused:</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                anim.anim_stop()</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            pygame.time.set_timer(CUSTOM_EV, randrange(2000, 6000))</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="comment"># if you have a non-integer speed you must alternate between speed - 0.5 and</span></div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="comment"># speed + 0.5. So we need the variable offset tp get this</span></div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    offset += (speed % 1)</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">for</span> sp <span class="keywordflow">in</span> all_sprites:</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        sp.rect.x += (speed + (0.5 <span class="keywordflow">if</span> offset == 1 <span class="keywordflow">else</span> -0.5 <span class="keywordflow">if</span> offset == 0.5 <span class="keywordflow">else</span> 0.0))</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordflow">if</span> sp.rect.x &gt; screen.get_width():</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            sp.kill()</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">if</span> offset == 1.0:</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        offset = 0.0    </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    </div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    screen.fill(<span class="stringliteral">&quot;aqua&quot;</span>)</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="comment"># make all animation progress</span></div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    all_sprites.update()</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    all_sprites.draw(screen)</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    pygame.display.flip()</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    clk.tick(30)</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>pygame.quit()</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            </div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    </div>
-<div class="ttc" id="aclassanimimage_1_1_anim_sprite_html"><div class="ttname"><a href="classanimimage_1_1_anim_sprite.html">animimage.AnimSprite</a></div><div class="ttdoc">An animated Sprite class to be used within pygame.</div><div class="ttdef"><b>Definition:</b> animimage.py:50</div></div>
-<div class="ttc" id="aclassslicesheet_1_1_sheet_slicer_html"><div class="ttname"><a href="classslicesheet_1_1_sheet_slicer.html">slicesheet.SheetSlicer</a></div><div class="ttdoc">An object which splits a rectangular image into subframes.</div><div class="ttdef"><b>Definition:</b> slicesheet.py:3</div></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">import</span> _setup</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">from</span> random <span class="keyword">import</span> randrange</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">import</span> pygame</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">import</span> animimage</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>pygame.init()</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>screen = pygame.display.set_mode((800, 600))</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>clk = pygame.time.Clock()</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>CUSTOM_EV = pygame.event.custom_type()</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment"># slice a sheet of images into its components</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>slicer = <a class="code hl_class" href="classanimimage_1_1_sheet_slicer.html">animimage.SheetSlicer</a>()</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>all_images = slicer.slice(<span class="stringliteral">&quot;carro.png&quot;</span>, 10, 4, 2380)</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment"># make from them four lists of animations:</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment"># images[0] yellow car   images[1] blue car   images[2] red car    images[3] purple car </span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>images = (all_images[0:10], all_images[10:20], all_images[20:30], all_images[30:40])</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>all_sprites = pygame.sprite.Group()</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment"># uncomment this to see debug info about sprites</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment">#animimage.set_debug(True)</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment"># the speed of the cars in pixel per 30th of sec. It can vary from 1.0 to 4.0 at</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="comment"># steps of 0.5 </span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>speed = 2.0</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="comment"># the speed of animations in 30th of sec per frame (see animimage.set_rate())</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>anim_rate = 4 / speed</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="comment"># internal variable (see below)</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>offset = 0.0</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>print(<span class="stringliteral">&quot;speed = {:2.1f}   anim_rate = {:4.2f}&quot;</span>.format(speed, anim_rate))</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="comment"># set timer for triggering the 1st car</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>pygame.time.set_timer(CUSTOM_EV, randrange(500, 2000))</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment"># flag for paused mode</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>paused = <span class="keyword">False</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment"># flag for exiting the main loop</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>done = <span class="keyword">False</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment"># main loop</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keywordflow">while</span> <span class="keywordflow">not</span> done:</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">for</span> ev <span class="keywordflow">in</span> pygame.event.get():</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">if</span> ev.type == pygame.QUIT:</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            done = <span class="keyword">True</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">elif</span> ev.type == pygame.KEYDOWN:</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="comment"># pressing SPACE toggles paused mode</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">if</span> ev.key == pygame.K_SPACE:</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                <span class="keywordflow">if</span> <span class="keywordflow">not</span> paused:</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                    <span class="comment"># stop all animations</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                    <span class="keywordflow">for</span> spr <span class="keywordflow">in</span> all_sprites:</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                        spr.anim_stop()</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                <span class="keywordflow">else</span>:</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                    <span class="comment"># restart all stopped animations</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                    <span class="keywordflow">for</span> spr <span class="keywordflow">in</span> all_sprites:</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                        spr.anim_start()</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                paused = <span class="keywordflow">not</span> paused</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="comment"># pressing left and right arrows increments or decrements car speed</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordflow">elif</span> ev.key <span class="keywordflow">in</span> (pygame.K_LEFT, pygame.K_RIGHT):</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                <span class="comment"># set the new speed</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                speed = max(1.0, speed - 0.5) <span class="keywordflow">if</span> ev.key == pygame.K_LEFT <span class="keywordflow">else</span> min(4.0, speed + 0.5)</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                <span class="comment"># update animation speed</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                anim_rate = 4 / speed</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                <span class="comment"># reset offset</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                offset = 0.0</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                <span class="keywordflow">for</span> spr <span class="keywordflow">in</span> all_sprites:</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                    spr.set_rate(anim_rate)</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                print(<span class="stringliteral">&quot;speed = {:2.1f}   anim_rate = {:4.2f}&quot;</span>.format(speed, anim_rate))</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="comment"># triggers a new car</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">elif</span> ev.type == CUSTOM_EV:</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="comment"># new AnimSprite</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            anim = <a class="code hl_class" href="classanimimage_1_1_anim_sprite.html">animimage.AnimSprite</a>()</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="comment"># choose a random car (four different colours)</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            anim.set_images(images[randrange(4)], <span class="keyword">True</span>)</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="comment"># choose a random height for the car</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            anim.rect.topleft = (-anim.rect.width, randrange(100, 400))</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="comment"># check if the car overlaps another animation</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> pygame.sprite.spritecollide(anim, all_sprites, <span class="keyword">False</span>):</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                <span class="comment"># if not add the animation to the main Group, so it can be drawn</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                all_sprites.add(anim)</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                <span class="comment"># set the animation rate</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                anim.set_rate(anim_rate)</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="comment"># if animations are stopped stops the new car</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">if</span> paused:</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                anim.anim_stop()</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            pygame.time.set_timer(CUSTOM_EV, randrange(2000, 6000))</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="comment"># if you have a non-integer speed you must alternate between speed - 0.5 and</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="comment"># speed + 0.5. So we need the variable offset tp get this</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    offset += (speed % 1)</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">for</span> sp <span class="keywordflow">in</span> all_sprites:</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        sp.rect.x += (speed + (0.5 <span class="keywordflow">if</span> offset == 1 <span class="keywordflow">else</span> -0.5 <span class="keywordflow">if</span> offset == 0.5 <span class="keywordflow">else</span> 0.0))</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordflow">if</span> sp.rect.x &gt; screen.get_width():</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            sp.kill()</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> offset == 1.0:</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        offset = 0.0    </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    screen.fill(<span class="stringliteral">&quot;aqua&quot;</span>)</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="comment"># make all animation progress</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    all_sprites.update()</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    all_sprites.draw(screen)</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    pygame.display.flip()</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    clk.tick(30)</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>pygame.quit()</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    </div>
+<div class="ttc" id="aclassanimimage_1_1_anim_sprite_html"><div class="ttname"><a href="classanimimage_1_1_anim_sprite.html">animimage.AnimSprite</a></div><div class="ttdoc">A n i m S p r i t e.</div><div class="ttdef"><b>Definition:</b> animimage.py:58</div></div>
+<div class="ttc" id="aclassanimimage_1_1_sheet_slicer_html"><div class="ttname"><a href="classanimimage_1_1_sheet_slicer.html">animimage.SheetSlicer</a></div><div class="ttdoc">An object which splits a rectangular image into subframes.</div><div class="ttdef"><b>Definition:</b> animimage.py:1018</div></div>
 </div><!-- fragment --> </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
