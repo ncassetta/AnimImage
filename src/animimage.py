@@ -30,7 +30,7 @@ method, to call the base class method.
 
 """
 
-
+_VERSION = "1.0.0"
 
 import pygame.sprite
 
@@ -43,24 +43,28 @@ def set_debug(f):
     When you import the file debug mode is disabled, if the user turns it
     on the various methods will print additional informations on the
     console.
+    /param f **True** or **False**.
     """
     global _debug
     _debug = f
     
+def version():
+    """Prints on the console the version number."""
+    print("animimage v", _VERSION, "\nCopyright Nicola Cassetta")
+    
 
-#######################################################################
-####
-####           A n i m S p r i t e
-####
-#######################################################################
+# ######################################################################
+# ###
+# ###           A n i m S p r i t e
+# ###
+# ######################################################################
 
 
 class AnimSprite(pygame.sprite.Sprite):
     """An animated Sprite class to be used within pygame.
-    You can set for it a list of frames (pygame Surface) which will be shown in sequence
-    calling the update() method; moreover you can choose between a one-shot animation
-    (the Sprite will be killed at the end of the sequence) or a repeated one and set the
-    animation speed.
+    You can set for it a list of frames (pygame Surface objects) which will be shown in
+    sequence calling the update() method, choosing between a one-shot animation (the Sprite
+    will be killed at the end of the sequence) or a repeated one.
     It is a subclass of the Sprite object, so it can be added and deleted to groups via
     usual pygame methods. Before using an AnimSprite you must call the set_images() method
     which initializes the list of its frames, then you can make the animation to progress
@@ -94,7 +98,7 @@ class AnimSprite(pygame.sprite.Sprite):
         
     def set_images(self, img_list, loop=False):
         """Set the list of the animation frames and start the animation.
-        You must call this before using the object.
+        You **must** call this before using the object.
         \param img_list an iterable which can contain strings (they are interpreted
         as filenames, and the method will try to load them) or Surface objects;
         \param loop if **False** the Sprite will be killed (i.e\. deleted from all
@@ -124,7 +128,7 @@ class AnimSprite(pygame.sprite.Sprite):
         the next frame.
         \param frame if you leave None the animation will stop on the actual frame,
         otherwise you can choose the fixed frame to show. It throws an IndexError if
-        frame is out of range.
+        _frame_ is out of range.
         """
         self.running = False
         if frame:
@@ -141,7 +145,7 @@ class AnimSprite(pygame.sprite.Sprite):
         this only if you had formerly stopped the animation.
         \param frame if you leave None the animation will restart from the last frame
         on which it was stopped, otherwise you can set the starting frame. It throws
-        an IndexError if frame is out of range.
+        an IndexError if _frame_ is out of range.
         """
         if frame:
             if frame >= len(self.images):
@@ -156,9 +160,9 @@ class AnimSprite(pygame.sprite.Sprite):
 
     def set_rate(self, rate):
         """Set the speed of the animation.
-        This is relative to the update() calls, i.e\. a rate of 1 will change frame
-        at every call of update(), a rate of 2 every two calls, and so on. The
-        parameter can be a float number.
+        /param rate this is relative to the update() calls, i.e\. a rate of 1 will
+        change frame at every call of update(), a rate of 2 every two calls, and so on.
+        It can be a float number for finer adjustement (see update()).
         """
         self.rate = rate
         self._rate_offset = 0
@@ -168,11 +172,11 @@ class AnimSprite(pygame.sprite.Sprite):
         The object has an internal attribute _rate_offset_. At every call of this
         _rate_offset_ is incremented by one and, if it is greater or equal to the
         animation rate, the frame is changed (and _rate_offset_ is decremented by
-        the rate). This allows to set a float as rate.
-        Moreover, if we have reached the last frame and must change it, this checks
-        if the loop is enabled: if yes it restarts from the first frame, otherwise
-        it calls self.kill() deleting the object from all Group it belongs (so the
-        object will no longer be drawn).
+        the rate). This allows to set a float as rate
+        When the animation reaches its last frame it checks the _loop_ parameter: if
+        it is **False** it calls self.kill() deleting the object from all Group it
+        belongs (so the object will no longer be drawn), otherwise restarts from the
+        first frame.
         """
         if self.images and self.running:
             self._rate_offset += 1
@@ -199,11 +203,11 @@ class AnimSprite(pygame.sprite.Sprite):
             self.loop = loop
             
             
-#######################################################################
-####
-####           V a n i s h S p r i t e
-####
-#######################################################################
+# ######################################################################
+# ###
+# ###           V a n i s h S p r i t e
+# ###
+# ######################################################################
 
 
 class VanishSprite(pygame.sprite.Sprite):
@@ -359,11 +363,11 @@ class VanishSprite(pygame.sprite.Sprite):
             print("Frame", self.frame, "Dimensions", self.image.get_size(), "Alpha", img.get_alpha())        
 
 
-#######################################################################
-####
-####           F l a s h S p r i t e
-####
-#######################################################################
+# ######################################################################
+# ###
+# ###           F l a s h S p r i t e
+# ###
+# ######################################################################
 
 
 class FlashSprite(pygame.sprite.Sprite):
@@ -496,7 +500,6 @@ class FlashSprite(pygame.sprite.Sprite):
         _rate_offset_ is incremented by one and, if it is greater or equal to the
         animation rate, the frame is changed (and _rate_offset_ is decremented by
         the rate). This allows to set a float as rate.
-        
         When the animation reaches its last frame (and _hold_ is set to **False**)
         it calls self.kill() deleting the object from all Group it belongs (so the
         object will no longer be drawn).
@@ -533,11 +536,11 @@ class FlashSprite(pygame.sprite.Sprite):
                 print("Frame", self.frame, "Flash", self.frame // 2 + 1, "Image on")
                 
                 
-#######################################################################
-####
-####           G i f D e c o d e r
-####
-#######################################################################
+# ######################################################################
+# ###
+# ###           G i f D e c o d e r
+# ###
+# ######################################################################
        
 
 import time, os
@@ -1008,11 +1011,11 @@ class GIFDecoder:
             raise ValueError("Empty image list")
         
         
-#######################################################################
-####
-####           S h e e t S l i c e r
-####
-#######################################################################
+# ######################################################################
+# ###
+# ###           S h e e t S l i c e r
+# ###
+# ######################################################################
 
 
 class SheetSlicer:
@@ -1111,11 +1114,11 @@ class SheetSlicer:
             raise ValueError("Empty image list")
 
 
-######################################################################
-####
-####           v i e w l i s t
-####
-#######################################################################        
+# #####################################################################
+# ###
+# ###           v i e w l i s t
+# ###
+# ######################################################################        
 
 
 def viewlist(images, interval=1000):
@@ -1141,11 +1144,11 @@ def viewlist(images, interval=1000):
     if not was_init:
         pygame.quit()
 
-######################################################################
-####
-####           E n d
-####
-#######################################################################
+# #####################################################################
+# ###
+# ###           E n d
+# ###
+# ######################################################################
                 
 
 if __name__ == "__main__":
