@@ -25,6 +25,7 @@
 var NAVTREE =
 [
   [ "AnimImage", "index.html", [
+    [ "Modules", "modules.html", "modules" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Members", "functions.html", [

@@ -17,18 +17,6 @@
 ##    License along with this file; if not, write to the Free
 ##    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-"""pygame module with animated Sprite class.
-
-This module contains a simple AnimSprite (animated Sprite) class to be used
-within pygame. It is a subclass of the Sprite object, so it can be added
-and deleted to groups via usual pygame methods.
-Before using an AnimSprite you must call the set_images() method which
-initializes the list of its frames, then you can make the animation
-to progress calling the update() method on a Group it belongs. When
-subclassing the AnimSprite class remember, if you subclass the update()
-method, to call the base class method.
-
-"""
 
 _VERSION = "1.0.0"
 
@@ -37,9 +25,11 @@ import pygame.sprite
 
 _debug = False
 
+## \defgroup FUNCTIONS Helper functions
+## These are some global functions defined in the module, useful for debugging purposes.
+## @{
 def set_debug(f):
-    """Turn on/off the debug mode.
-    
+    """Turn on/off the debug mode.    
     When you import the file debug mode is disabled, if the user turns it
     on the various methods will print additional informations on the
     console.
@@ -49,8 +39,10 @@ def set_debug(f):
     _debug = f
     
 def version():
-    """Prints on the console the version number."""
+    """Prints on the console the version number.
+    This is in the MAJOR/MINOR/PATCH format."""
     print("animimage v", _VERSION, "\nCopyright Nicola Cassetta")
+## @}
     
 
 # ######################################################################
@@ -62,14 +54,16 @@ def version():
 
 class AnimSprite(pygame.sprite.Sprite):
     """An animated Sprite class to be used within pygame.
-    You can set for it a list of frames (pygame Surface objects) which will be shown in
-    sequence calling the update() method, choosing between a one-shot animation (the Sprite
-    will be killed at the end of the sequence) or a repeated one.
-    It is a subclass of the Sprite object, so it can be added and deleted to groups via
-    usual pygame methods. Before using an AnimSprite you must call the set_images() method
-    which initializes the list of its frames, then you can make the animation to progress
-    calling the update() method on a Group it belongs. When subclassing the AnimSprite
-    class remember, if you subclass the update() method, to call the base class method.
+    You can set for it a list of frames (pygame Surface objects) which will be shown
+    in sequence calling the update() method; moreover you can choose between a one-shot
+    animation (the Sprite will be killed at the end of the sequence) or a repeated one,
+    and set the animation speed. It is a subclass of the Sprite object, so it can be added
+    and deleted to groups via usual pygame methods.
+    
+    Before using an AnimSprite you must call the set_images() method which initializes
+    the list of its frames, then you can make the animation to progress calling the update()
+    method on a Group it belongs. When subclassing the AnimSprite class remember, if you
+    redefine update(), to call the base class method.
     """
 
     def __init__(self, *args):
@@ -155,28 +149,40 @@ class AnimSprite(pygame.sprite.Sprite):
         self.running = True
         self._rate_offset = 0
         if _debug:
-            print("Frame", self.frame, "AnimSprite animation restarted")        
-        
+            print("Frame", self.frame, "AnimSprite animation restarted")               
 
     def set_rate(self, rate):
         """Set the speed of the animation.
-        /param rate this is relative to the update() calls, i.e\. a rate of 1 will
+        \param rate this is relative to the update() calls, i.e\. a rate of 1 will
         change frame at every call of update(), a rate of 2 every two calls, and so on.
-        It can be a float number for finer adjustement (see update()).
+        It can be a float number (see update()). The default values set by the constructor
+        is 1.
         """
         self.rate = rate
-        self._rate_offset = 0
-
+        self._rate_offset = 0       
+        
+    def set_loop(loop):
+        """Enable or disable the animation loop.
+        You can do it also with the set_images() method, so you need this only if
+        you want to change a formerly set parameter.
+        \param loop if **False** the Sprite will be killed (i.e\. deleted from all
+        Group it belongs) after the last frame, otherwise the animation will restart
+        from the first frame and you must kill or stop it by yourself.
+        """
+        if loop in (True, False):
+            self.loop = loop 
+            
     def update(self):
         """Make the animation avance.
         The object has an internal attribute _rate_offset_. At every call of this
         _rate_offset_ is incremented by one and, if it is greater or equal to the
-        animation rate, the frame is changed (and _rate_offset_ is decremented by
-        the rate). This allows to set a float as rate
-        When the animation reaches its last frame it checks the _loop_ parameter: if
-        it is **False** it calls self.kill() deleting the object from all Group it
-        belongs (so the object will no longer be drawn), otherwise restarts from the
-        first frame.
+        animation rate, the frame is changed and _rate_offset_ is decremented by
+        the rate. This allows to set a float as rate for finer adjustment.
+        
+        When the animation reaches its last frame it checks if the loop is enabled:
+        if yes it restarts from the first frame, otherwise it calls self.kill()
+        deleting the object from all Group it belongs (so the object will no longer
+        be drawn).
         """
         if self.images and self.running:
             self._rate_offset += 1
@@ -191,17 +197,7 @@ class AnimSprite(pygame.sprite.Sprite):
                         self.kill()
                 self.image = self.images[self.frame]
 
-    def set_loop(loop):
-        """Enable or disable the animation loop.
-        You can do it also with the set_images() method, so you need this only if
-        you want to change a formerly set parameter.
-        \param loop if **False** the Sprite will be killed (i.e\. deleted from all
-        Group it belongs) after the last frame, otherwise the animation will restart
-        from the first frame and you must kill or stop it by yourself.
-        """
-        if loop in (True, False):
-            self.loop = loop
-            
+
             
 # ######################################################################
 # ###
@@ -216,12 +212,13 @@ class VanishSprite(pygame.sprite.Sprite):
     increasing transparence which will be shown in sequence calling the update() method,
     giving the impression of a disappearing image. The sprite can change its dimensions
     (growing or shrinking) and move in a fixed direction during the animation, and the
-    user can set the animation speed.
-    It is a subclass of the Sprite object, so it can be added and deleted to groups via
-    usual pygame methods. Before using a VanishSprite you must call the set_image() method
-    which sets the initial image and its Rect, then you can make the animation to progress
-    calling the update() method on a Group it belongs. When subclassing the VanishSprite
-    class remember, if you subclass the update() method, to call the base class method.
+    user can set the animation speed. It is a subclass of the Sprite object, so it can be
+    added and deleted to groups via usual pygame methods.
+    
+    Before using a VanishSprite you must call the set_image() method which sets the
+    initial image and its Rect, then you can make the animation to progress calling the
+    update() method on a Group it belongs. When subclassing the VanishSprite
+    class remember, if you redefine update(), to call the base class method.
     """    
     
     def __init__(self, *args):
@@ -241,7 +238,7 @@ class VanishSprite(pygame.sprite.Sprite):
         
     def set_image(self, img):
         """Set the initial image of the animation and start the animation.
-        You must call this before using the object.
+        You **must** call this before using the object.
         \param img can be a string (which is interpreted as a filename, and the method
         will try to load it) or a Surface object.
         """
@@ -296,17 +293,20 @@ class VanishSprite(pygame.sprite.Sprite):
         
     def set_param(self, rate=1, scale=1, frames=4, dir=(0, 0)):
         """Set the parameters of the animation.
+        This is called by constructot with default values when the object
+        is created.
         \param rate the speed of the animation. This is relative to the update()
         calls, i.e\. a rate of 1 will change frame at every call of update(), a rate
-        of 2 every two calls, and so on. The parameter can be a float number.
+        of 2 every two calls, and so on. The parameter can be a float number
+        (see update()).
         \param scale a scale factor (integer or float) between a frame and the
         previous, so the image can grow or shrink while disappearing.
-        \param frames the number of frames the animation will take to disappear. Each
-        of them will be assigned increasing transparency. Increasing this parameter
-        the animation will be smoother.
+        \param frames the number of frames the animation will take to disappear
+        (integer). Each of them will be assigned increasing transparency. Increasing
+        this parameter the animation will be smoother.
         \param dir the direction along which the sprite will move during the animation.
         It is a duple of integers with the x, y values ​(in pixels) ​of the direction
-        vector. 
+        vector (so (2, 0) will move two pixels right every frame). 
         """
         ## The speed rate.
         self.rate = rate
@@ -325,8 +325,9 @@ class VanishSprite(pygame.sprite.Sprite):
         """Make the animation avance.
         The object has an internal attribute _rate_offset_. At every call of this
         _rate_offset_ is incremented by one and, if it is greater or equal to the
-        animation rate, the frame is changed (and _rate_offset_ is decremented by
-        the rate). This allows to set a float as rate.
+        animation rate, the frame is changed and _rate_offset_ is decremented by
+        the rate. This allows to set a float as rate for finer adjustment.
+        
         When the animation reaches its last frame it calls self.kill() deleting the
         object from all Group it belongs (so the object will no longer be drawn).
         """
@@ -347,7 +348,7 @@ class VanishSprite(pygame.sprite.Sprite):
                     self._set_current_image()
                         
     def _set_current_image(self):
-        ## Internal function
+        # Internal function
         scale_amt = (int(self.orig_image.get_width() * (1 + (self.scale - 1) / self.frames * self.frame)),
                      int(self.orig_image.get_height() * (1 + (self.scale - 1) / self.frames * self.frame)))
         if scale_amt != (0, 0):
@@ -374,12 +375,13 @@ class FlashSprite(pygame.sprite.Sprite):
     """A flashing Sprite class to be used within pygame.
     Starting from a given image (pygame Surface) it shows and hides it for a given number
     of times calling the update() method. After them you can choose if mantaining the Sprite
-    shown or not.
-    It is a subclass of the Sprite object, so it can be added and deleted to groups via
-    usual pygame methods. Before using a FlashSprite you must call the set_image() method
-    which sets the initial image and its Rect, then you can make the animation to progress
-    calling the update() method on a Group it belongs. When subclassing the FlashSprite
-    class remember, if you subclass the update() method, to call the base class method.
+    shown or not. It is a subclass of the Sprite object, so it can be added and deleted to
+    groups via usual pygame methods.
+    
+    Before using a FlashSprite you must call the set_image() method which sets the initial
+    image and its Rect, then you can make the animation to progress calling the update()
+    method on a Group it belongs. When subclassing the FlashSprite class remember, if you
+    redefine update(), to call the base class method.
     """        
     def __init__(self, *args):
         """The constructor.
@@ -400,7 +402,7 @@ class FlashSprite(pygame.sprite.Sprite):
         
     def set_image(self, img):
         """Set the initial image of the animation and start the animation. 
-        You must call this before using the object.
+        You **must** call this before using the object.
         \param img can be a string (which is interpreted as a filename, and the method
         will try to load it) or a Surface object.
         """
@@ -430,7 +432,7 @@ class FlashSprite(pygame.sprite.Sprite):
         otherwise you can choose the fixed frame to show, where
         0 = show first time, 1 = hide first time, 2 = show second time ... until
         2 * self.flashes - 1. It throws an IndexError if frame is out of range.
-        \param visible if you set it True the flashing will be stopped when the Sprite
+        \param visible if you set it **True** the flashing will be stopped when the Sprite
         is visible, otherwise it can be stopped even if the Sprite is actually invisible.
         """   
         if frame and frame >= self.flashes * 2:
@@ -465,15 +467,16 @@ class FlashSprite(pygame.sprite.Sprite):
         
     def set_param(self, rate=1, flashes=3, hold=False):
         """Set the parameters of the animation.
+        This is called by constructot with default values when the object
+        is created.
         \param rate the speed of the animation. This is relative to the update()
         calls, i.e\. a rate of 1 will change frame at every call of update(),
         a rate of 2 every two calls, and so on. The parameter can be a float
-        number.
+        number (see update()).
         \param flashes the number of flashes (appearing and disappearing) of the
-        animation. It must be an integer, or an exception will be thrown. You can
-        give -1 for a continuosly flashing image.
+        animation (integer). You can give -1 for a continuosly flashing image.
         \param hold if you leave **False** the Sprite will disappear after the
-        last flash, otherwise it will remain as a still image.
+        last flash, otherwise it will remain shown as a still image.
         """
         ## The speed rate.
         self.rate = rate
@@ -489,8 +492,9 @@ class FlashSprite(pygame.sprite.Sprite):
         """Set a list of pygame Group from which the Sprite will be removed after the
         end of the flashes, even if it is held shown.
         This is useful if you have set a Group of only animated sprites and call update()
-        on it for progressing the animations. When the Sprite ends flashing you can
-        remove it from the Group, avoiding useless calls.
+        on it for progressing the animations. When the Sprite ends flashing and remains
+        shown you can remove it from the Group, avoiding useless calls.
+        \param *args one or more pygame Group.
         """
         self.toberemoved = args
 
@@ -498,12 +502,14 @@ class FlashSprite(pygame.sprite.Sprite):
         """Make the animation avance.
         The object has an internal attribute _rate_offset_. At every call of this
         _rate_offset_ is incremented by one and, if it is greater or equal to the
-        animation rate, the frame is changed (and _rate_offset_ is decremented by
-        the rate). This allows to set a float as rate.
-        When the animation reaches its last frame (and _hold_ is set to **False**)
+        animation rate, the frame is changed and _rate_offset_ is decremented by
+        the rate. This allows to set a float as rate for finer adjustment.
+        
+        When the animation reaches its last frame it checks if the image must be held:
+        if yes it removes the sprite from the groups set by set_remove(), otherwise
         it calls self.kill() deleting the object from all Group it belongs (so the
         object will no longer be drawn).
-        """        
+        """     
         if self.orig_image and self.running:
             self._rate_offset += 1
             if self._rate_offset >= self.rate:
@@ -525,7 +531,7 @@ class FlashSprite(pygame.sprite.Sprite):
                     self._set_current_image()
                                                        
     def _set_current_image(self):
-        """Internal function."""
+        # Internal function.
         if self.frame % 2:
             self.image.set_alpha(0)
             if _debug:
@@ -574,13 +580,22 @@ LZWAlgorythm and fill_colors in C called from Python
                 
 """
                 
-_debug, _log = False, False
+_log = False
 
-def set_debug(debug=None, log=None):
-    if debug is not None:
-        _debug = debug
-    if log is not None:
-        _log = log
+
+## \addtogroup FUNCTIONS
+## @{
+def set_log(f):
+    """Turn on/off the generation of a log file of the GIFDecoder.    
+    When you import the file the log is disabled; if the user turns it
+    on the GIFDecoder.decode() method will print detailed info on the
+    decoding process into a GIFDecoder.log file in the same folder
+    of this file.
+    /param f **True** or **False**.
+    """    
+    global _log
+    _log = log
+## @}
 
 
 class GIFDecoderError(Exception):
@@ -1121,6 +1136,9 @@ class SheetSlicer:
 # ######################################################################        
 
 
+## \addtogroup FUNCTIONS
+## @{
+
 def viewlist(images, interval=1000):
     """Helper function which shows a list of pygame Surfaces as an animation.
     It opens a pygame screen.
@@ -1143,6 +1161,7 @@ def viewlist(images, interval=1000):
         pygame.time.wait(interval)
     if not was_init:
         pygame.quit()
+## @}
 
 # #####################################################################
 # ###
@@ -1157,8 +1176,8 @@ if __name__ == "__main__":
     fnt_small = pygame.font.SysFont("Arial", 24)
     screen = pygame.display.set_mode((400, 300))
     screen.fill("aqua")
-    surf = fnt_big.render("Animimage 0.9",True, "blue")
-    screen.blit(surf, (60, 30))
+    surf = fnt_big.render("Animimage " + _VERSION, True, "blue")
+    screen.blit(surf, ((400 - surf.get_width()) // 2, 30))
     surf = fnt_small.render("A library for animated sprites in pygame", True, "blue")
     screen.blit(surf,(20, 120))
     surf = fnt_small.render("(C) 2023 Nicola Cassetta", True, "blue")

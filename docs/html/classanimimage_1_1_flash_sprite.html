@@ -170,7 +170,8 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >A flashing Sprite class to be used within pygame. </p>
-<p >Starting from a given image (pygame Surface) it shows and hides it for a given number of times calling the <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a> method. After them you can choose if mantaining the Sprite shown or not. It is a subclass of the Sprite object, so it can be added and deleted to groups via usual pygame methods. Before using a <a class="el" href="classanimimage_1_1_flash_sprite.html" title="A flashing Sprite class to be used within pygame.">FlashSprite</a> you must call the <a class="el" href="classanimimage_1_1_flash_sprite.html#ab35c90746ecf2b34c84dd1ae91f8c31f" title="Set the initial image of the animation and start the animation.">set_image()</a> method which sets the initial image and its Rect, then you can make the animation to progress calling the <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a> method on a Group it belongs. When subclassing the <a class="el" href="classanimimage_1_1_flash_sprite.html" title="A flashing Sprite class to be used within pygame.">FlashSprite</a> class remember, if you subclass the <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a> method, to call the base class method. </p>
+<p >Starting from a given image (pygame Surface) it shows and hides it for a given number of times calling the <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a> method. After them you can choose if mantaining the Sprite shown or not. It is a subclass of the Sprite object, so it can be added and deleted to groups via usual pygame methods.</p>
+<p >Before using a <a class="el" href="classanimimage_1_1_flash_sprite.html" title="A flashing Sprite class to be used within pygame.">FlashSprite</a> you must call the <a class="el" href="classanimimage_1_1_flash_sprite.html#ab35c90746ecf2b34c84dd1ae91f8c31f" title="Set the initial image of the animation and start the animation.">set_image()</a> method which sets the initial image and its Rect, then you can make the animation to progress calling the <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a> method on a Group it belongs. When subclassing the <a class="el" href="classanimimage_1_1_flash_sprite.html" title="A flashing Sprite class to be used within pygame.">FlashSprite</a> class remember, if you redefine <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a>, to call the base class method. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a4cc27522685aafad0a3d7248e74d670a" name="a4cc27522685aafad0a3d7248e74d670a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4cc27522685aafad0a3d7248e74d670a">&#9670;&nbsp;</a></span>__init__()</h2>
@@ -277,7 +278,7 @@ Public Attributes</h2></td></tr>
  The Sprite remains visible, but calling <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a> will no longer progress to the next frame. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">frame</td><td>if you leave None the animation will stop on the actual frame, otherwise you can choose the fixed frame to show, where 0 = show first time, 1 = hide first time, 2 = show second time ... until 2 * self.flashes - 1. It throws an IndexError if frame is out of range. </td></tr>
-    <tr><td class="paramname">visible</td><td>if you set it True the flashing will be stopped when the Sprite is visible, otherwise it can be stopped even if the Sprite is actually invisible. </td></tr>
+    <tr><td class="paramname">visible</td><td>if you set it <b>True</b> the flashing will be stopped when the Sprite is visible, otherwise it can be stopped even if the Sprite is actually invisible. </td></tr>
   </table>
   </dd>
 </dl>
@@ -311,7 +312,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set the initial image of the animation and start the animation. </p>
-<p >You must call this before using the object. </p><dl class="params"><dt>Parameters</dt><dd>
+<p >You <b>must</b> call this before using the object. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">img</td><td>can be a string (which is interpreted as a filename, and the method will try to load it) or a Surface object. </td></tr>
   </table>
@@ -359,11 +360,11 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set the parameters of the animation. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >This is called by constructot with default values when the object is created. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rate</td><td>the speed of the animation. This is relative to the <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a> calls, i.e. a rate of 1 will change frame at every call of <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a>, a rate of 2 every two calls, and so on. The parameter can be a float number. </td></tr>
-    <tr><td class="paramname">flashes</td><td>the number of flashes (appearing and disappearing) of the animation. It must be an integer, or an exception will be thrown. You can give -1 for a continuosly flashing image. </td></tr>
-    <tr><td class="paramname">hold</td><td>if you leave <b>False</b> the Sprite will disappear after the last flash, otherwise it will remain as a still image. </td></tr>
+    <tr><td class="paramname">rate</td><td>the speed of the animation. This is relative to the <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a> calls, i.e. a rate of 1 will change frame at every call of <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a>, a rate of 2 every two calls, and so on. The parameter can be a float number (see <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a>). </td></tr>
+    <tr><td class="paramname">flashes</td><td>the number of flashes (appearing and disappearing) of the animation (integer). You can give -1 for a continuosly flashing image. </td></tr>
+    <tr><td class="paramname">hold</td><td>if you leave <b>False</b> the Sprite will disappear after the last flash, otherwise it will remain shown as a still image. </td></tr>
   </table>
   </dd>
 </dl>
@@ -397,7 +398,12 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set a list of pygame Group from which the Sprite will be removed after the end of the flashes, even if it is held shown. </p>
-<p >This is useful if you have set a Group of only animated sprites and call <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a> on it for progressing the animations. When the Sprite ends flashing you can remove it from the Group, avoiding useless calls. </p>
+<p >This is useful if you have set a Group of only animated sprites and call <a class="el" href="classanimimage_1_1_flash_sprite.html#a6dfb5e91521a5f0f4d35f6bcc8fe58bc" title="Make the animation avance.">update()</a> on it for progressing the animations. When the Sprite ends flashing and remains shown you can remove it from the Group, avoiding useless calls. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*args</td><td>one or more pygame Group. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -418,7 +424,8 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Make the animation avance. </p>
-<p >The object has an internal attribute <em>rate_offset</em>. At every call of this <em>rate_offset</em> is incremented by one and, if it is greater or equal to the animation rate, the frame is changed (and <em>rate_offset</em> is decremented by the rate). This allows to set a float as rate. When the animation reaches its last frame (and <em>hold</em> is set to <b>False</b>) it calls self.kill() deleting the object from all Group it belongs (so the object will no longer be drawn). </p>
+<p >The object has an internal attribute <em>rate_offset</em>. At every call of this <em>rate_offset</em> is incremented by one and, if it is greater or equal to the animation rate, the frame is changed and <em>rate_offset</em> is decremented by the rate. This allows to set a float as rate for finer adjustment.</p>
+<p >When the animation reaches its last frame it checks if the image must be held: if yes it removes the sprite from the groups set by <a class="el" href="classanimimage_1_1_flash_sprite.html#ad4ad854ba60e1c60203627a46997e2a9" title="Set a list of pygame Group from which the Sprite will be removed after the end of the flashes,...">set_remove()</a>, otherwise it calls self.kill() deleting the object from all Group it belongs (so the object will no longer be drawn). </p>
 
 </div>
 </div>
